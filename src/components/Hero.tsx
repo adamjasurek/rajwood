@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { HashLink } from './HashLink'
 import { site } from '../content/site'
 import { gsap, useGSAP } from '../lib/gsap'
 
@@ -22,17 +23,6 @@ export function Hero() {
           { y: 36, autoAlpha: 0, duration: 1.05 },
           '-=0.55',
         )
-
-        gsap.to('[data-hero-img]', {
-          y: 18,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: root.current,
-            start: 'top top',
-            end: 'bottom top',
-            scrub: 1,
-          },
-        })
       })
 
       return () => mm.revert()
@@ -63,12 +53,12 @@ export function Hero() {
             {site.hero.subtitle}
           </p>
           <div data-hero-copy className="mt-8">
-            <a
-              href={site.hero.ctaHref}
-              className="inline-flex h-12 items-center justify-center bg-wood px-7 text-[0.95rem] font-medium tracking-wide text-paper no-underline"
+            <HashLink
+              to={site.hero.ctaHref}
+              className="inline-flex h-12 items-center justify-center bg-wood px-7 text-[0.95rem] font-medium tracking-wide text-paper no-underline transition-colors duration-300 hover:bg-wood-deep"
             >
               {site.hero.cta}
-            </a>
+            </HashLink>
           </div>
         </div>
 
@@ -80,7 +70,7 @@ export function Hero() {
             data-hero-img
             src={site.hero.image.src}
             alt={site.hero.image.alt}
-            className="h-auto w-full max-h-52 object-contain object-bottom will-change-transform sm:max-h-72 lg:max-h-[28rem]"
+            className="h-auto w-full max-h-64 object-contain object-bottom sm:max-h-80 lg:max-h-[32rem]"
           />
         </figure>
       </div>

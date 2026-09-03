@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { ContactForm } from './ContactForm'
 import { site } from '../content/site'
 import { gsap, ScrollTrigger, useGSAP } from '../lib/gsap'
@@ -62,7 +63,7 @@ export function Footer() {
     <footer
       ref={root}
       id={site.footer.id}
-      className="pb-24 pt-16 sm:pt-20 md:pb-16 lg:pt-24"
+      className="pt-16 sm:pt-20 lg:pt-24"
     >
       <div className="mx-auto max-w-[1120px] px-5">
         <p
@@ -94,7 +95,7 @@ export function Footer() {
         <a
           data-fade
           href={`tel:${site.phone.tel}`}
-          className="mt-8 block text-center font-serif text-[2.4rem] font-medium leading-none tracking-[-0.03em] text-ink no-underline sm:text-6xl lg:text-[4.5rem]"
+          className="mt-8 block text-center font-serif text-[2.4rem] font-medium leading-none tracking-[-0.03em] text-ink no-underline hover:underline sm:text-6xl lg:text-[4.5rem]"
         >
           {site.phone.display}
         </a>
@@ -102,13 +103,18 @@ export function Footer() {
         <div data-fade className="mt-14 border-t border-line pt-8">
           <div className="flex items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <a href="#top" aria-label={site.name} className="inline-block shrink-0 text-ink no-underline">
+              <Link
+                to="/"
+                aria-label={site.name}
+                onClick={() => window.scrollTo({ top: 0 })}
+                className="inline-block shrink-0 text-ink no-underline"
+              >
                 <img
                   src={site.logo.src}
                   alt=""
                   className="h-14 w-auto sm:h-16"
                 />
-              </a>
+              </Link>
               <div className="text-[0.95rem] text-mute">
                 <p className="text-ink">{site.name}</p>
                 <p className="mt-1">{site.address}</p>
@@ -140,14 +146,25 @@ export function Footer() {
               ))}
             </ul>
           </div>
+        </div>
 
-          <p className="mt-8 text-center text-[0.95rem] text-mute">
-            IČO: {site.ico}
-            {' | '}
-            {site.owner} © {year}
-            {' | '}
-            {site.credit}
-          </p>
+        <div className="mt-10 border-t border-line pt-5 pb-[max(5.75rem,calc(env(safe-area-inset-bottom)+4.75rem))] md:pb-5">
+          <div className="grid grid-cols-3 items-center gap-2 text-[0.68rem] leading-snug text-mute sm:gap-6 sm:text-[0.9rem]">
+            <p className="justify-self-start">IČO: {site.ico}</p>
+            <p className="justify-self-center text-center">
+              {site.owner} © {year}
+            </p>
+            <p className="justify-self-end text-right">
+              <a
+                href={site.creditHref}
+                target="_blank"
+                rel="noreferrer"
+                className="text-mute no-underline hover:underline"
+              >
+                {site.credit}
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </footer>

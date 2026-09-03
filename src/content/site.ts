@@ -6,11 +6,13 @@ export const site = {
   owner: 'Lukáš Rajnoha',
   ico: '000000000',
   credit: 'Vytvořil Adam Jašúrek',
+  creditHref: 'https://adamjasurek.cz',
   email: '',
   warrantyYears: 'X',
   logo: {
     src: '/images/logo.png',
     headerSrc: '/images/svetle-logo.png',
+    markSrc: '/images/svetle-znak.png',
     fallbackSrc: '/logo.svg',
   },
   phone: {
@@ -26,17 +28,17 @@ export const site = {
     title: 'Dřevěné pergoly\nna míru',
     subtitle: 'Stavíme zakázkové pergoly, přístřešky a zahradní boudy.',
     cta: 'Prohlédnout práce',
-    ctaHref: '#realizace',
+    ctaHref: '/#realizace',
     image: {
       src: '/images/hero-pergola.png',
       alt: 'Zakázková dřevěná pergola',
     },
   },
   nav: [
-    { href: '#sluzby', label: 'Služby' },
-    { href: '#proc', label: 'Proč my' },
-    { href: '#realizace', label: 'Realizace' },
-    { href: '#kontakt', label: 'Kontakt' },
+    { href: '/#sluzby', label: 'Služby' },
+    { href: '/#proc', label: 'Proč my' },
+    { href: '/#realizace', label: 'Realizace' },
+    { href: '/#kontakt', label: 'Kontakt' },
   ],
   services: {
     id: 'sluzby',
@@ -88,28 +90,42 @@ export const site = {
     id: 'realizace',
     kicker: 'Realizace',
     title: 'Práce, která je vidět.',
+    showMore: 'Zobrazit více',
+    back: 'Zpět na realizace',
+    lightbox: {
+      close: 'Zavřít',
+      prev: 'Předchozí fotka',
+      next: 'Další fotka',
+    },
     projects: [
       {
-        name: 'Pergola / Hnojník / 2026',
+        slug: 'pergola2',
+        name: 'Pergola / Dolní Domaslavice / 2026',
         photos: [
-          { src: '/images/pergola/pergola-01.webp', alt: 'Pergola s posezením a houpacím křeslem' },
-          { src: '/images/pergola/pergola-02.webp', alt: 'Posezení pod pergolou' },
-          { src: '/images/pergola/pergola-03.webp', alt: 'Interiér pergoly' },
-          { src: '/images/pergola/pergola-04.webp', alt: 'Krov a osvětlení pergoly' },
-          { src: '/images/pergola/pergola-05.webp', alt: 'Strop pergoly' },
-          { src: '/images/pergola/pergola-06.webp', alt: 'Spoje krovu' },
-          { src: '/images/pergola/pergola-07.webp', alt: 'Konstrukce pergoly' },
+          { src: '/images/pergola2/pergola2-01.jpg', alt: 'Pergola u domu s posezením a jídelním stolem' },
+          { src: '/images/pergola2/pergola2-02.jpg', alt: 'Dřevěná pergola s taškovou střechou u domu' },
         ],
       },
       {
-        name: 'Vstup / Hnojník / 2026',
+        slug: 'pergola',
+        name: 'Pergola / Hnojník / 2026',
+        photos: [
+          { src: '/images/pergola/pergola-01.webp', alt: 'Dřevěná pergola s posezením' },
+          { src: '/images/pergola/pergola-02.webp', alt: 'Pergola se šikmou střechou' },
+          { src: '/images/pergola/pergola-03.webp', alt: 'Posezení pod pergolou s houpacím křeslem' },
+          { src: '/images/pergola/pergola-04.webp', alt: 'Interiér pergoly s ratanovým posezením' },
+          { src: '/images/pergola/pergola-05.webp', alt: 'Krov a osvětlení pergoly' },
+        ],
+      },
+      {
+        slug: 'vstup',
+        name: 'Přístřešek / Hnojník / 2026',
         photos: [
           { src: '/images/vstup/vstup-01.webp', alt: 'Dřevěný přístřešek nad vstupem' },
-          { src: '/images/vstup/vstup-02.webp', alt: 'Vstup se dřevěnou stříškou' },
+          { src: '/images/vstup/vstup-02.webp', alt: 'Čelní pohled na vstup se stříškou' },
           { src: '/images/vstup/vstup-03.webp', alt: 'Detail stříšky nad dveřmi' },
           { src: '/images/vstup/vstup-04.webp', alt: 'Dřevěné trámy vstupu' },
-          { src: '/images/vstup/vstup-05.webp', alt: 'Čelní pohled na vstup' },
-          { src: '/images/vstup/vstup-06.webp', alt: 'Štít stříšky' },
+          { src: '/images/vstup/vstup-05.webp', alt: 'Štít stříšky nad vstupem' },
         ],
       },
     ],
@@ -124,8 +140,45 @@ export const site = {
       lastName: 'Příjmení',
       phone: 'Telefonní číslo',
       email: 'E-mail',
-      message: 'Zpráva',
+      message: 'Zpráva (nepovinné)',
       submit: 'Odeslat',
+      sending: 'Odesílám…',
+      successTitle: 'Odesláno!',
+      successText: 'Brzy se vám ozveme.',
+      errors: {
+        firstName: 'Zadejte jméno.',
+        lastName: 'Zadejte příjmení.',
+        email: 'Zadejte platnou e-mailovou adresu.',
+        phone: 'Zadejte telefonní číslo.',
+        phoneInvalid: 'Zadejte platné telefonní číslo.',
+        send: 'Odeslání se nepovedlo. Zkuste to znovu, nebo zavolejte.',
+      },
     },
   },
 } as const
+
+export type Project = (typeof site.gallery.projects)[number]
+export type Photo = Project['photos'][number]
+
+export function getProject(slug: string | undefined) {
+  return site.gallery.projects.find((project) => project.slug === slug)
+}
+
+export function projectPath(slug: string) {
+  return `/realizace/${slug}`
+}
+
+export function extraPhotoLabel(count: number) {
+  const n = Math.abs(count)
+  const n100 = n % 100
+  const n10 = n % 10
+  const word =
+    n100 >= 11 && n100 <= 14
+      ? 'fotek'
+      : n10 === 1
+        ? 'fotka'
+        : n10 >= 2 && n10 <= 4
+          ? 'fotky'
+          : 'fotek'
+  return `+${n} ${word}`
+}

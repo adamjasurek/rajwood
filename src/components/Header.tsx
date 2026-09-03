@@ -1,9 +1,43 @@
 import { useRef } from 'react'
+import { HashLink } from './HashLink'
 import { Logo } from './Logo'
 import { site } from '../content/site'
 import { gsap, ScrollTrigger, useGSAP } from '../lib/gsap'
 
-const LIGHT_RATIO = 2000 / 1090
+const MARK_RATIO = 726 / 835
+
+function WoodBackdrop() {
+  return (
+    <div data-header-wood className="header-wood" aria-hidden="true">
+      <div className="header-wood__photo" />
+      <svg className="absolute inset-0 h-full w-full opacity-[0.18] mix-blend-overlay">
+        <filter
+          id="rajwood-header-grain"
+          x="-10%"
+          y="-10%"
+          width="120%"
+          height="120%"
+        >
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.9 0.12"
+            numOctaves="3"
+            seed="4"
+            stitchTiles="stitch"
+          />
+        </filter>
+        <rect
+          width="100%"
+          height="100%"
+          filter="url(#rajwood-header-grain)"
+        />
+      </svg>
+      <div className="header-wood__read" />
+      <div className="header-wood__sheen" />
+      <div className="header-wood__edge" />
+    </div>
+  )
+}
 
 export function Header() {
   const root = useRef<HTMLElement>(null)
@@ -27,51 +61,63 @@ export function Header() {
           const bar = header.querySelector<HTMLElement>('[data-header-bar]')
           const wrap = header.querySelector<HTMLElement>('[data-logo-wrap]')
           const light = header.querySelector<HTMLElement>('[data-logo-light]')
-          const dark = header.querySelector<HTMLElement>('[data-logo-dark]')
-          if (!bar || !wrap || !light || !dark) return
-
-          gsap.set(light, { autoAlpha: 1 })
-          gsap.set(dark, { autoAlpha: 0 })
+          const mark = header.querySelector<HTMLElement>('[data-logo-mark]')
+          if (!bar || !wrap || !light || !mark) return
 
           const expandedBar = isDesktop ? 104 : 88
           const compactBar = 56
-          const expandedLogo = isDesktop ? 68 : 56
           const compactLogo = 36
-          const duration = reduceMotion ? 0 : 0.55
-          let compact = window.scrollY > 24
+          const heightDelta = expandedBar - compactBar
+          const enterAt = heightDelta + 24
+          const leaveAt = 8
+          const duration = reduceMotion ? 0 : 0.65
+          const fade = reduceMotion ? 0 : 0.2
 
-          const paint = (next: boolean, animate: boolean) => {
-            const time = animate ? duration : 0
-            const logoH = next ? compactLogo : expandedLogo
-            const vars = { duration: time, ease: 'power3.inOut', overwrite: 'auto' as const }
+          gsap.set(light, { autoAlpha: 1 })
+          gsap.set(mark, { autoAlpha: 0 })
 
-            gsap.to(header, {
-              boxShadow: next
-                ? '0 10px 28px rgba(26, 22, 18, 0.34)'
-                : '0 18px 40px rgba(26, 22, 18, 0.22)',
-              ...vars,
-            })
-            gsap.to(bar, { height: next ? compactBar : expandedBar, ...vars })
-            gsap.to(wrap, {
-              height: logoH,
-              width: logoH * LIGHT_RATIO,
-              ...vars,
-            })
-            header.dataset.compact = next ? 'true' : 'false'
-          }
+          const tl = gsap.timeline({
+            paused: true,
+            defaults: { ease: 'power2.out' },
+          })
 
-          paint(compact, false)
+          tl.to(light, { autoAlpha: 0, duration: fade }, 0)
+            .to(mark, { autoAlpha: 1, duration: fade }, 0)
+            .to(bar, { height: compactBar, duration }, 0)
+            .to(
+              wrap,
+              {
+                height: compactLogo,
+                width: compactLogo * MARK_RATIO,
+                duration,
+              },
+              0,
+            )
+            .to(
+              header,
+              { boxShadow: '0 10px 28px rgba(26, 22, 18, 0.34)', duration },
+              0,
+            )
 
-          const apply = (next: boolean) => {
-            if (next === compact) return
-            compact = next
-            paint(next, true)
-          }
+          let compact = window.scrollY > enterAt
+          tl.progress(compact ? 1 : 0)
+          header.dataset.compact = compact ? 'true' : 'false'
 
           ScrollTrigger.create({
             start: 0,
             end: 'max',
-            onUpdate: (self) => apply(self.scroll() > 24),
+            onUpdate: (self) => {
+              const y = self.scroll()
+              if (!compact && y > enterAt) {
+                compact = true
+                header.dataset.compact = 'true'
+                tl.play()
+              } else if (compact && y < leaveAt) {
+                compact = false
+                header.dataset.compact = 'false'
+                tl.reverse()
+              }
+            },
           })
         },
       )
@@ -82,52 +128,50 @@ export function Header() {
   )
 
   return (
-    <header
-      ref={root}
-      data-compact="false"
-      className="group/hdr sticky top-0 z-40 bg-wood-deep shadow-[0_18px_40px_rgba(26,22,18,0.22)]"
-    >
-      <div
-        data-header-wood
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/header-wood.png')" }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-ink/15"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-5 bg-gradient-to-t from-black/45 to-transparent"
-      />
-
-      <div
-        data-header-bar
-        className="relative mx-auto flex h-[5.5rem] max-w-[1120px] items-center justify-between px-5 md:h-[6.5rem]"
+    <>
+      <header
+        ref={root}
+        data-compact="false"
+        className="group/hdr fixed inset-x-0 top-0 z-40 bg-[#2a1810]"
       >
-        <Logo />
+        <WoodBackdrop />
 
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Hlavní">
-          {site.nav.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="text-[0.92rem] text-paper/80 no-underline hover:text-paper focus-visible:outline-paper"
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
-
-        <a
-          href={`tel:${site.phone.tel}`}
-          className="text-[0.92rem] font-medium tracking-wide text-paper no-underline focus-visible:outline-paper"
+        <div
+          data-header-bar
+          className="relative mx-auto flex h-[5.5rem] max-w-[1120px] items-center justify-between gap-6 px-5 md:h-[6.5rem]"
         >
-          <span className="md:hidden">Zavolat</span>
-          <span className="hidden md:inline">{site.phone.display}</span>
-        </a>
-      </div>
-    </header>
+          <Logo />
+
+          <div className="flex items-center gap-3 md:gap-5">
+            <nav
+              className="header-nav hidden items-center gap-6 md:flex lg:gap-7"
+              aria-label="Hlavní"
+            >
+              {site.nav.map((item) => (
+                <HashLink
+                  key={item.href}
+                  to={item.href}
+                  className="header-nav__link relative py-1 text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-paper no-underline focus-visible:outline-paper lg:text-[0.82rem] lg:tracking-[0.16em]"
+                >
+                  {item.label}
+                </HashLink>
+              ))}
+            </nav>
+
+            <a
+              href={`tel:${site.phone.tel}`}
+              className="inline-flex h-8 items-center bg-paper px-3 text-[0.75rem] font-semibold tracking-[0.06em] text-[#2a1810] shadow-[0_8px_18px_rgba(8,4,2,0.28)] no-underline transition-colors duration-200 hover:bg-paper-2 focus-visible:outline-paper md:h-9 md:px-3.5 md:text-[0.8rem]"
+            >
+              <span className="md:hidden">Zavolat</span>
+              <span className="hidden md:inline">{site.phone.display}</span>
+            </a>
+          </div>
+        </div>
+      </header>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none h-[5.5rem] shrink-0 md:h-[6.5rem]"
+      />
+    </>
   )
 }

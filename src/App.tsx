@@ -1,50 +1,17 @@
-import { useRef } from 'react'
-import { Footer } from './components/Footer'
-import { Gallery } from './components/Gallery'
-import { Header } from './components/Header'
-import { Hero } from './components/Hero'
-import { Services } from './components/Services'
-import { StickyCall } from './components/StickyCall'
-import { Values } from './components/Values'
-import { ScrollTrigger, useGSAP } from './lib/gsap'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { Layout } from './components/Layout'
+import { HomePage } from './pages/HomePage'
+import { ProjectPage } from './pages/ProjectPage'
 
-function App() {
-  const page = useRef<HTMLDivElement>(null)
-
-  useGSAP(() => {
-    const images = Array.from(document.images)
-    const pending = images.filter((img) => !img.complete)
-
-    if (pending.length === 0) {
-      ScrollTrigger.refresh()
-      return
-    }
-
-    let left = pending.length
-    const done = () => {
-      left -= 1
-      if (left <= 0) ScrollTrigger.refresh()
-    }
-
-    pending.forEach((img) => {
-      img.addEventListener('load', done, { once: true })
-      img.addEventListener('error', done, { once: true })
-    })
-  }, { scope: page })
-
+export default function App() {
   return (
-    <div ref={page} id="top">
-      <Header />
-      <main>
-        <Hero />
-        <Services />
-        <Values />
-        <Gallery />
-      </main>
-      <Footer />
-      <StickyCall />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/realizace/:slug" element={<ProjectPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
-
-export default App
