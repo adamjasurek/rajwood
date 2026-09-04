@@ -7,9 +7,13 @@ type LogoProps = {
   className?: string
 }
 
+const LOGO_FULL_H = 916
+const LOGO_WORD_TOP = 735
+const LOGO_WORD_H = LOGO_FULL_H - LOGO_WORD_TOP
+
 export function Logo({ className = '' }: LogoProps) {
-  const [failedLight, setFailedLight] = useState(false)
   const [failedMark, setFailedMark] = useState(false)
+  const [failedWord, setFailedWord] = useState(false)
   const location = useLocation()
 
   return (
@@ -19,23 +23,32 @@ export function Logo({ className = '' }: LogoProps) {
       onClick={() => {
         if (location.pathname === '/') scrollToTop('smooth')
       }}
-      className={`relative inline-block h-14 w-[6.5rem] overflow-hidden sm:h-16 sm:w-[7.8rem] ${className}`}
+      className={`relative flex h-16 w-[7.25rem] flex-col items-center overflow-hidden sm:h-[4.75rem] sm:w-[8.75rem] ${className}`}
     >
-      <img
-        data-logo-light
-        src={failedLight ? site.logo.fallbackSrc : site.logo.headerSrc}
-        alt={site.name}
-        className="absolute left-1/2 top-1/2 h-full w-auto max-w-none -translate-x-1/2 -translate-y-1/2 object-contain"
-        onError={() => setFailedLight(true)}
-      />
       <img
         data-logo-mark
         src={failedMark ? site.logo.fallbackSrc : site.logo.markSrc}
-        alt=""
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 h-full w-auto max-w-none -translate-x-1/2 -translate-y-1/2 object-contain opacity-0"
+        alt={site.name}
+        className="relative z-[1] h-11 w-auto max-w-none shrink-0 object-contain sm:h-14"
         onError={() => setFailedMark(true)}
       />
+      <span
+        data-logo-word-clip
+        className="relative h-[1.125rem] w-full shrink-0 overflow-hidden sm:h-5"
+      >
+        <img
+          data-logo-word
+          src={failedWord ? site.logo.fallbackSrc : site.logo.headerSrc}
+          alt=""
+          aria-hidden="true"
+          className="absolute left-1/2 max-w-none -translate-x-1/2"
+          style={{
+            height: `${(LOGO_FULL_H / LOGO_WORD_H) * 100}%`,
+            top: `${-(LOGO_WORD_TOP / LOGO_WORD_H) * 100}%`,
+          }}
+          onError={() => setFailedWord(true)}
+        />
+      </span>
     </Link>
   )
 }

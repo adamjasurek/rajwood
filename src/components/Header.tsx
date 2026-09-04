@@ -4,7 +4,7 @@ import { Logo } from './Logo'
 import { site } from '../content/site'
 import { gsap, ScrollTrigger, useGSAP } from '../lib/gsap'
 
-const MARK_RATIO = 726 / 835
+const MARK_RATIO = 614 / 703
 
 function WoodBackdrop() {
   return (
@@ -33,7 +33,6 @@ function WoodBackdrop() {
         />
       </svg>
       <div className="header-wood__read" />
-      <div className="header-wood__sheen" />
       <div className="header-wood__edge" />
     </div>
   )
@@ -60,9 +59,9 @@ export function Header() {
 
           const bar = header.querySelector<HTMLElement>('[data-header-bar]')
           const wrap = header.querySelector<HTMLElement>('[data-logo-wrap]')
-          const light = header.querySelector<HTMLElement>('[data-logo-light]')
           const mark = header.querySelector<HTMLElement>('[data-logo-mark]')
-          if (!bar || !wrap || !light || !mark) return
+          const wordClip = header.querySelector<HTMLElement>('[data-logo-word-clip]')
+          if (!bar || !wrap || !mark || !wordClip) return
 
           const expandedBar = isDesktop ? 104 : 88
           const compactBar = 56
@@ -71,19 +70,28 @@ export function Header() {
           const enterAt = heightDelta + 24
           const leaveAt = 8
           const duration = reduceMotion ? 0 : 0.65
-          const fade = reduceMotion ? 0 : 0.2
+          const fade = reduceMotion ? 0 : 1.05
 
-          gsap.set(light, { autoAlpha: 1 })
-          gsap.set(mark, { autoAlpha: 0 })
+          const setWord = (isCompact: boolean, instant = false) => {
+            gsap.to(wordClip, {
+              autoAlpha: isCompact ? 0 : 1,
+              y: isCompact ? -12 : 0,
+              filter: isCompact ? 'blur(10px)' : 'blur(0px)',
+              duration: instant ? 0 : fade,
+              ease: isCompact ? 'power2.in' : 'power2.out',
+              overwrite: 'auto',
+            })
+          }
+
+          gsap.set(mark, { autoAlpha: 1 })
+          gsap.set(wordClip, { y: 0, filter: 'blur(0px)' })
 
           const tl = gsap.timeline({
             paused: true,
             defaults: { ease: 'power2.out' },
           })
 
-          tl.to(light, { autoAlpha: 0, duration: fade }, 0)
-            .to(mark, { autoAlpha: 1, duration: fade }, 0)
-            .to(bar, { height: compactBar, duration }, 0)
+          tl.to(bar, { height: compactBar, duration }, 0)
             .to(
               wrap,
               {
@@ -93,6 +101,8 @@ export function Header() {
               },
               0,
             )
+            .to(mark, { height: compactLogo, duration }, 0)
+            .to(wordClip, { height: 0, duration }, 0)
             .to(
               header,
               { boxShadow: '0 10px 28px rgba(26, 22, 18, 0.34)', duration },
@@ -102,6 +112,7 @@ export function Header() {
           let compact = window.scrollY > enterAt
           tl.progress(compact ? 1 : 0)
           header.dataset.compact = compact ? 'true' : 'false'
+          setWord(compact, true)
 
           ScrollTrigger.create({
             start: 0,
@@ -111,10 +122,12 @@ export function Header() {
               if (!compact && y > enterAt) {
                 compact = true
                 header.dataset.compact = 'true'
+                setWord(true)
                 tl.play()
               } else if (compact && y < leaveAt) {
                 compact = false
                 header.dataset.compact = 'false'
+                setWord(false)
                 tl.reverse()
               }
             },

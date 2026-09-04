@@ -42,8 +42,13 @@ export const site = {
   ],
   services: {
     id: 'sluzby',
-    kicker: 'Co děláme',
-    title: 'Dřevostavby všeho druhu',
+    title: 'Dřevostavby',
+    titleRest: 'všeho druhu',
+    image: {
+      src: '/images/pergola2/pergola2-01.jpg',
+      alt: 'Zakázková dřevěná pergola s posezením',
+      caption: 'Pergola / Dolní Domaslavice',
+    },
     items: [
       {
         name: 'Přístřešky',

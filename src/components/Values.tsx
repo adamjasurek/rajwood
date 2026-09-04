@@ -10,16 +10,34 @@ export function Values() {
       const mm = gsap.matchMedia()
 
       mm.add('(prefers-reduced-motion: no-preference)', () => {
-        gsap.from('[data-fade]', {
-          y: 32,
-          autoAlpha: 0,
-          duration: 0.9,
-          stagger: 0.08,
+        const tl = gsap.timeline({
           scrollTrigger: {
             trigger: root.current,
             start: 'top 82%',
           },
         })
+
+        tl.from('[data-fade]', {
+          y: 28,
+          autoAlpha: 0,
+          duration: 0.8,
+          stagger: 0.1,
+        })
+          .from(
+            '[data-beam]',
+            { scaleX: 0, duration: 0.75, ease: 'power2.inOut' },
+            '-=0.15',
+          )
+          .from(
+            '[data-value]',
+            {
+              y: 28,
+              autoAlpha: 0,
+              duration: 0.8,
+              stagger: 0.1,
+            },
+            '-=0.2',
+          )
       })
 
       return () => mm.revert()
@@ -46,10 +64,15 @@ export function Values() {
         >
           {site.values.title}
         </h2>
+        <div
+          data-beam
+          aria-hidden
+          className="mx-auto mt-7 h-px w-24 origin-center bg-wood sm:mt-8"
+        />
 
         <ol className="mt-10 grid gap-x-8 gap-y-10 sm:mt-14 sm:grid-cols-2 lg:grid-cols-4">
           {site.values.items.map((item) => (
-            <li key={item.num} data-fade>
+            <li key={item.num} data-value>
               <p className="text-[0.72rem] tracking-[0.18em] text-wood">
                 {item.num}
               </p>

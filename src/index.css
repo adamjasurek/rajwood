@@ -64,29 +64,21 @@ textarea:focus-visible {
   position: absolute;
   inset: 0;
   background-image: url('/images/header-wood.jpg');
-  background-position: 50% 42%;
+  background-position: 50% 62%;
   background-repeat: no-repeat;
   background-size: cover;
-}
-
-.header-wood__sheen {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 236, 214, 0.16) 0%,
-      rgba(255, 220, 190, 0.04) 22%,
-      transparent 48%,
-      rgba(12, 6, 3, 0.28) 100%
-    ),
-    radial-gradient(80% 140% at 50% -45%, rgba(255, 228, 196, 0.12), transparent 55%);
 }
 
 .header-wood__read {
   position: absolute;
   inset: 0;
-  background: rgba(22, 12, 8, 0.14);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(18, 10, 6, 0.34) 0%,
+      rgba(22, 12, 8, 0.12) 28%,
+      rgba(22, 12, 8, 0.16) 100%
+    );
 }
 
 .header-wood__edge {
@@ -116,4 +108,10 @@ textarea:focus-visible {
 .header-nav__link:hover::after,
 .header-nav__link:focus-visible::after {
   transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-service-wipe] {
+    display: none;
+  }
 }
