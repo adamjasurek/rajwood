@@ -1,6 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { site } from '../content/site'
 import { sendInquiry } from '../lib/sendInquiry'
+import { WoodBackdrop } from './WoodBackdrop'
 
 const fieldClass =
   'mt-2 w-full border border-line bg-paper px-4 py-3 text-[1rem] text-ink placeholder:text-mute/70'
@@ -219,9 +220,12 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={sending}
-        className="mt-2 inline-flex h-12 w-full cursor-pointer items-center justify-center bg-wood text-[0.95rem] font-medium tracking-wide text-paper transition-colors duration-300 hover:bg-wood-deep disabled:cursor-wait disabled:opacity-70"
+        className="btn-wood mt-2 inline-flex h-12 w-full cursor-pointer items-center justify-center text-[0.95rem] font-medium tracking-wide text-paper disabled:cursor-wait disabled:opacity-70"
       >
-        {sending ? copy.sending : copy.submit}
+        <WoodBackdrop />
+        <span className="relative z-[1]">
+          {sending ? copy.sending : copy.submit}
+        </span>
       </button>
       {errors.send ? (
         <p role="alert" className="text-center text-[0.95rem] text-[#8a3428]">

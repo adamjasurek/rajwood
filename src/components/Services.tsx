@@ -1,19 +1,23 @@
 import { useRef } from 'react'
 import { site } from '../content/site'
-import { gsap, useGSAP } from '../lib/gsap'
+import { gsap, ScrollTrigger, useGSAP } from '../lib/gsap'
+
+const photos = site.services.images
 
 export function Services() {
   const root = useRef<HTMLElement>(null)
-  const { contextSafe } = useGSAP({ scope: root })
 
   useGSAP(
     () => {
       const mm = gsap.matchMedia()
 
       mm.add('(prefers-reduced-motion: no-preference)', () => {
-        const photo = root.current?.querySelector<HTMLElement>('[data-service-photo]')
-        const img = root.current?.querySelector<HTMLElement>('[data-service-img]')
-        const wipe = root.current?.querySelector<HTMLElement>('[data-service-wipe]')
+        const scopeEl = root.current
+        const photo = scopeEl?.querySelector<HTMLElement>('[data-service-photo]')
+        const wipe = scopeEl?.querySelector<HTMLElement>('[data-service-wipe]')
+        const list = scopeEl?.querySelector<HTMLElement>('[data-service-list]')
+        const slides = gsap.utils.toArray<HTMLElement>('[data-service-slide]', scopeEl)
+        const captions = gsap.utils.toArray<HTMLElement>('[data-service-caption]', scopeEl)
 
         const tl = gsap.timeline({
           defaults: { ease: 'power3.out' },
@@ -34,30 +38,21 @@ export function Services() {
           tl.fromTo(
             wipe,
             { yPercent: 0 },
-            { yPercent: -101, duration: 1.05, ease: 'power3.inOut' },
+            {
+              yPercent: -101,
+              duration: 1.05,
+              ease: 'power3.inOut',
+              immediateRender: false,
+            },
             0.15,
           )
         }
 
-        if (img) {
-          gsap.set(img, { scale: 1.14 })
-
-          if (photo) {
-            gsap.fromTo(
-              img,
-              { yPercent: -8 },
-              {
-                yPercent: 8,
-                ease: 'none',
-                scrollTrigger: {
-                  trigger: photo,
-                  scrub: 0.7,
-                  start: 'top bottom',
-                  end: 'bottom top',
-                },
-              },
-            )
-          }
+        if (slides.length > 1 && photo) {
+          gsap.set(slides.slice(1), { autoAlpha: 0 })
+          gsap.set(captions.slice(1), { autoAlpha: 0 })
+          const flash = photo.querySelector<HTMLElement>('[data-service-flash]')
+          if (flash) gsap.set(flash, { autoAlpha: 0 })
         }
 
         tl.from(
@@ -70,46 +65,88 @@ export function Services() {
           },
           '-=0.55',
         )
-      })
 
-      mm.add(
-        '(pointer: fine) and (prefers-reduced-motion: no-preference)',
-        () => {
-          const rows = gsap.utils.toArray<HTMLElement>('[data-service]')
-          const cleanups: Array<() => void> = []
+        const rows = gsap.utils.toArray<HTMLElement>('[data-service]', scopeEl)
 
-          rows.forEach((row) => {
-            const mark = row.querySelector<HTMLElement>('[data-service-mark]')
-            gsap.set(mark, { scaleY: 0 })
+        if (list && rows.length) {
+          const smooth = { duration: 0.22, ease: 'power2.out' as const }
+          const mark = list.querySelector<HTMLElement>('[data-service-mark]')
+          const flash = photo?.querySelector<HTMLElement>('[data-service-flash]')
 
-            const enter = contextSafe(() => {
-              gsap.to(row, { x: 10, duration: 0.45, ease: 'power3.out' })
-              gsap.to(mark, {
-                scaleY: 1,
-                duration: 0.45,
-                ease: 'power3.out',
-              })
-            })
-            const leave = contextSafe(() => {
-              gsap.to(row, { x: 0, duration: 0.5, ease: 'power3.out' })
-              gsap.to(mark, {
-                scaleY: 0,
-                duration: 0.4,
-                ease: 'power3.inOut',
-              })
-            })
-
-            row.addEventListener('mouseenter', enter)
-            row.addEventListener('mouseleave', leave)
-            cleanups.push(() => {
-              row.removeEventListener('mouseenter', enter)
-              row.removeEventListener('mouseleave', leave)
-            })
+          if (mark) gsap.set(mark, { scaleY: 0 })
+          const markTo = mark ? gsap.quickTo(mark, 'scaleY', smooth) : null
+          const shiftTo = rows.map((row) => {
+            const shift = row.querySelector<HTMLElement>('[data-service-shift]')
+            if (!shift) return null
+            return gsap.quickTo(shift, 'x', smooth)
           })
 
-          return () => cleanups.forEach((fn) => fn())
-        },
-      )
+          let ranges: { start: number; end: number }[] = []
+          let current = -1
+
+          const measure = () => {
+            const total = rows.reduce((sum, row) => sum + row.offsetHeight, 0)
+            let acc = 0
+            ranges = rows.map((row) => {
+              const start = total ? acc / total : 0
+              acc += row.offsetHeight
+              return { start, end: total ? acc / total : 1 }
+            })
+          }
+
+          const showSlide = (index: number) => {
+            gsap.set(slides, { autoAlpha: (i: number) => (i === index ? 1 : 0) })
+            gsap.set(captions, { autoAlpha: (i: number) => (i === index ? 1 : 0) })
+          }
+
+          const slideAt = (progress: number) => {
+            if (!ranges.length || slides.length === 0) return 0
+            const i = ranges.findIndex((range) => progress < range.end - 0.001)
+            const row = i < 0 ? ranges.length - 1 : i
+            return Math.min(row, slides.length - 1)
+          }
+
+          const cutTo = (index: number) => {
+            if (index === current) return
+            const first = current === -1
+            current = index
+            showSlide(index)
+            if (first || !flash) return
+            gsap.fromTo(
+              flash,
+              { autoAlpha: 1 },
+              { autoAlpha: 0, duration: 0.16, ease: 'power1.out', overwrite: true },
+            )
+          }
+
+          const apply = (progress: number) => {
+            markTo?.(progress)
+            ranges.forEach((range, i) => {
+              const span = range.end - range.start
+              const amount =
+                span <= 0
+                  ? 0
+                  : gsap.utils.clamp(0, 1, (progress - range.start) / span)
+              shiftTo[i]?.(amount * 10)
+            })
+            if (slides.length > 1 && photo) cutTo(slideAt(progress))
+          }
+
+          ScrollTrigger.create({
+            trigger: list,
+            start: 'top 55%',
+            end: 'bottom 55%',
+            invalidateOnRefresh: true,
+            onRefresh: (self) => {
+              measure()
+              current = -1
+              apply(self.progress)
+              if (flash) gsap.set(flash, { autoAlpha: 0 })
+            },
+            onUpdate: (self) => apply(self.progress),
+          })
+        }
+      })
 
       return () => mm.revert()
     },
@@ -140,54 +177,78 @@ export function Services() {
         <figure className="relative order-2 mt-8 lg:col-start-1 lg:row-start-2 lg:mt-0 lg:h-full">
           <div
             data-service-photo
-            className="relative aspect-[4/5] overflow-hidden sm:aspect-[5/6] lg:absolute lg:inset-0 lg:aspect-auto"
+            className="relative aspect-[4/5] overflow-hidden sm:aspect-[5/6] lg:absolute lg:inset-0 lg:h-full lg:aspect-auto"
           >
-            <img
-              data-service-img
-              src={site.services.image.src}
-              alt={site.services.image.alt}
-              className="absolute inset-0 h-full w-full object-cover object-[center_42%] will-change-transform"
-            />
+            {photos.map((image, index) => (
+              <div
+                key={image.src}
+                data-service-slide
+                className="absolute inset-0 overflow-hidden"
+                style={{ zIndex: index }}
+              >
+                <img
+                  data-service-img
+                  src={image.src}
+                  alt={image.alt}
+                  className="absolute inset-0 h-full w-full object-cover object-[center_42%]"
+                />
+              </div>
+            ))}
             <span
               data-service-wipe
               aria-hidden
               className="absolute inset-0 z-[2] -translate-y-[101%] bg-paper"
             />
             <span
+              data-service-flash
               aria-hidden
-              className="pointer-events-none absolute left-4 top-4 z-[1] h-8 w-8 border-l border-t border-paper/80"
+              className="pointer-events-none absolute inset-0 z-[4] bg-paper opacity-0"
             />
             <span
               aria-hidden
-              className="pointer-events-none absolute bottom-4 right-4 z-[1] h-8 w-8 border-b border-r border-paper/80"
+              className="pointer-events-none absolute left-4 top-4 z-[3] h-8 w-8 border-l border-t border-paper/80"
             />
+            <span
+              aria-hidden
+              className="pointer-events-none absolute bottom-4 right-4 z-[3] h-8 w-8 border-b border-r border-paper/80"
+            />
+            <figcaption className="pointer-events-none absolute inset-x-4 bottom-4 z-[3] h-[2.6em]">
+              {photos.map((image) => (
+                <span
+                  key={image.caption}
+                  data-service-caption
+                  className="absolute inset-x-0 bottom-0 text-[0.72rem] font-medium uppercase leading-snug tracking-[0.18em] text-paper [text-shadow:0_1px_8px_rgba(18,12,8,0.55)]"
+                >
+                  {image.caption}
+                </span>
+              ))}
+            </figcaption>
           </div>
-          <figcaption className="pointer-events-none absolute bottom-4 left-4 z-[1] text-[0.72rem] font-medium uppercase tracking-[0.18em] text-paper [text-shadow:0_1px_8px_rgba(18,12,8,0.55)]">
-            {site.services.image.caption}
-          </figcaption>
         </figure>
 
-        <div className="order-3 mt-8 border-b border-line lg:col-start-2 lg:row-start-2 lg:mt-0 lg:max-w-[40rem]">
-          {site.services.items.map((item, index) => (
+        <div
+          data-service-list
+          className="relative order-3 mt-8 border-b border-line lg:col-start-2 lg:row-start-2 lg:mt-0 lg:max-w-[40rem]"
+        >
+          <span
+            data-service-mark
+            aria-hidden
+            className="pointer-events-none absolute bottom-0 left-0 top-0 z-[2] w-[2px] origin-top bg-wood"
+          />
+          {site.services.items.map((item) => (
             <article
               key={item.name}
               data-service
-              className="relative border-t border-line py-6 pl-5 will-change-transform sm:py-7 sm:pl-6"
+              className="relative py-6 pl-5 before:pointer-events-none before:absolute before:inset-x-0 before:left-[2px] before:top-0 before:h-px before:bg-line sm:py-7 sm:pl-6"
             >
-              <span
-                data-service-mark
-                aria-hidden
-                className="absolute bottom-0 left-0 top-0 w-[2px] origin-top bg-wood"
-              />
-              <p className="text-[0.72rem] tracking-[0.18em] text-wood">
-                {String(index + 1).padStart(2, '0')}
-              </p>
-              <h3 className="mt-2 font-serif text-[1.85rem] font-medium tracking-[-0.03em] sm:text-[2.15rem]">
-                {item.name}
-              </h3>
-              <p className="mt-2 max-w-[38ch] text-[1.02rem] leading-relaxed text-mute">
-                {item.text}
-              </p>
+              <div data-service-shift className="will-change-transform">
+                <h3 className="font-serif text-[1.85rem] font-medium tracking-[-0.03em] sm:text-[2.15rem]">
+                  {item.name}
+                </h3>
+                <p className="mt-2 max-w-[38ch] text-[1.02rem] leading-relaxed text-mute">
+                  {item.text}
+                </p>
+              </div>
             </article>
           ))}
         </div>

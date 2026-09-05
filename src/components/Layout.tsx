@@ -1,10 +1,19 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Footer } from './Footer'
 import { Header } from './Header'
 import { StickyCall } from './StickyCall'
 import { ScrollTrigger, useGSAP } from '../lib/gsap'
+import { unlockBootScroll, waitForLayout, waitFrames } from '../lib/bootScroll'
 import { scrollToHash, scrollToTop } from '../lib/scroll'
+
+function settle(hash: string) {
+  if (hash) scrollToHash(hash, 'auto')
+  else scrollToTop('auto')
+  ScrollTrigger.refresh()
+  if (hash) scrollToHash(hash, 'auto')
+  ScrollTrigger.refresh()
+}
 
 export function Layout() {
   const page = useRef<HTMLDivElement>(null)
@@ -12,62 +21,45 @@ export function Layout() {
   const prevPathname = useRef<string | null>(null)
   const isHome = location.pathname === '/'
 
-  useEffect(() => {
-    const previous = window.history.scrollRestoration
-    window.history.scrollRestoration = 'manual'
-    return () => {
-      window.history.scrollRestoration = previous
-    }
-  }, [])
-
   useLayoutEffect(() => {
     const pathChanged = prevPathname.current !== location.pathname
     const isFirst = prevPathname.current === null
     prevPathname.current = location.pathname
 
-    if (isHome && location.hash) {
-      if (isFirst || pathChanged) {
-        scrollToHash(location.hash)
-      }
-      return
-    }
+    if (isFirst || !pathChanged) return
 
-    if (isFirst || pathChanged) {
-      scrollToTop()
-    }
+    settle(isHome ? location.hash : '')
   }, [isHome, location.pathname, location.hash])
-
-  useEffect(() => {
-    ScrollTrigger.refresh()
-    if (!isHome) scrollToTop()
-  }, [isHome, location.pathname])
 
   useGSAP(
     () => {
-      const images = Array.from(document.images)
-      const pending = images.filter((img) => !img.complete)
+      const hash = isHome ? location.hash : ''
+      let cancelled = false
+      let done = false
 
-      const finish = () => {
-        ScrollTrigger.refresh()
-        if (!isHome) scrollToTop()
-        else if (location.hash) scrollToHash(location.hash)
+      const finish = async () => {
+        if (cancelled || done) return
+        done = true
+        settle(hash)
+        await waitFrames(2)
+        if (cancelled) return
+        unlockBootScroll()
+        settle(hash)
       }
 
-      if (pending.length === 0) {
-        finish()
-        return
-      }
+      const failSafe = window.setTimeout(() => {
+        void finish()
+      }, 2500)
 
-      let left = pending.length
-      const done = () => {
-        left -= 1
-        if (left <= 0) finish()
-      }
-
-      pending.forEach((img) => {
-        img.addEventListener('load', done, { once: true })
-        img.addEventListener('error', done, { once: true })
+      waitForLayout().then(() => {
+        window.clearTimeout(failSafe)
+        void finish()
       })
+
+      return () => {
+        cancelled = true
+        window.clearTimeout(failSafe)
+      }
     },
     { scope: page, dependencies: [location.pathname, isHome] },
   )

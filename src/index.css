@@ -14,14 +14,19 @@
 }
 
 html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 4.5rem;
+  scroll-behavior: auto;
+  scroll-padding-top: 3.5rem;
+  overflow-anchor: none;
+  scrollbar-gutter: stable;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
+html.is-booting {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+html.is-booting #root {
+  opacity: 0;
 }
 
 body {
@@ -86,6 +91,25 @@ textarea:focus-visible {
   inset: 0;
   box-shadow:
     inset 0 -1px 0 rgba(0, 0, 0, 0.45);
+}
+
+.btn-wood {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: #2a1810;
+}
+
+.btn-wood .header-wood__photo {
+  background-size: 100vw auto;
+}
+
+.btn-wood [data-wood-backdrop] {
+  transition: filter 0.3s ease;
+}
+
+.btn-wood:hover:not(:disabled) [data-wood-backdrop] {
+  filter: brightness(0.72);
 }
 
 .header-nav__link {

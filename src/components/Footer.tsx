@@ -92,13 +92,48 @@ export function Footer() {
           <span className="h-px flex-1 bg-line" />
         </p>
 
-        <a
+        <article
           data-fade
-          href={`tel:${site.phone.tel}`}
-          className="mt-8 block text-center font-serif text-[2.4rem] font-medium leading-none tracking-[-0.03em] text-ink no-underline hover:underline sm:text-6xl lg:text-[4.5rem]"
+          className="mx-auto mt-10 w-full max-w-[22rem] border border-line px-8 py-9 text-left sm:px-10 sm:py-10"
         >
-          {site.phone.display}
-        </a>
+          <p className="font-serif text-[1.85rem] font-medium leading-tight tracking-[-0.02em] sm:text-[2.05rem]">
+            {site.owner}
+          </p>
+          <div aria-hidden className="mt-5 h-px w-12 bg-wood" />
+
+          <dl className="mt-6 space-y-4">
+            {site.email ? (
+              <div>
+                <dt className="text-[0.72rem] tracking-[0.16em] text-mute">
+                  mail
+                </dt>
+                <dd className="mt-1">
+                  <a
+                    href={`mailto:${site.email}`}
+                    className="text-[1.05rem] text-ink no-underline hover:underline"
+                  >
+                    {site.email}
+                  </a>
+                </dd>
+              </div>
+            ) : null}
+            <div>
+              <dt className="text-[0.72rem] tracking-[0.16em] text-mute">
+                tel
+              </dt>
+              <dd className="mt-1">
+                <a
+                  href={`tel:${site.phone.tel}`}
+                  className="text-[1.05rem] text-ink no-underline hover:underline"
+                >
+                  {site.phone.display}
+                </a>
+              </dd>
+            </div>
+          </dl>
+
+          <p className="mt-7 text-[0.9rem] text-mute">{site.footer.hours}</p>
+        </article>
 
         <div data-fade className="mt-14 border-t border-line pt-8">
           <div className="flex items-center justify-between gap-6">

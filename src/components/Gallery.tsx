@@ -131,17 +131,20 @@ export function Gallery() {
 
         gsap.set('[data-shot]', { autoAlpha: 0, y: 28 })
 
+        const revealShots = (elements: Element[]) => {
+          gsap.to(elements, {
+            y: 0,
+            autoAlpha: 1,
+            duration: 0.9,
+            stagger: 0.08,
+            overwrite: true,
+          })
+        }
+
         ScrollTrigger.batch('[data-shot]', {
           start: 'top 90%',
-          onEnter: (elements) => {
-            gsap.to(elements, {
-              y: 0,
-              autoAlpha: 1,
-              duration: 0.9,
-              stagger: 0.08,
-              overwrite: true,
-            })
-          },
+          onEnter: revealShots,
+          onEnterBack: revealShots,
         })
       })
 

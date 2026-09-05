@@ -1,42 +1,17 @@
 import { useRef } from 'react'
 import { HashLink } from './HashLink'
 import { Logo } from './Logo'
+import { WoodBackdrop } from './WoodBackdrop'
 import { site } from '../content/site'
 import { gsap, ScrollTrigger, useGSAP } from '../lib/gsap'
+import { isBooting } from '../lib/bootScroll'
+import {
+  HEADER_COMPACT,
+  HEADER_EXPANDED_DESKTOP,
+  HEADER_EXPANDED_MOBILE,
+} from '../lib/scroll'
 
 const MARK_RATIO = 614 / 703
-
-function WoodBackdrop() {
-  return (
-    <div data-header-wood className="header-wood" aria-hidden="true">
-      <div className="header-wood__photo" />
-      <svg className="absolute inset-0 h-full w-full opacity-[0.18] mix-blend-overlay">
-        <filter
-          id="rajwood-header-grain"
-          x="-10%"
-          y="-10%"
-          width="120%"
-          height="120%"
-        >
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.9 0.12"
-            numOctaves="3"
-            seed="4"
-            stitchTiles="stitch"
-          />
-        </filter>
-        <rect
-          width="100%"
-          height="100%"
-          filter="url(#rajwood-header-grain)"
-        />
-      </svg>
-      <div className="header-wood__read" />
-      <div className="header-wood__edge" />
-    </div>
-  )
-}
 
 export function Header() {
   const root = useRef<HTMLElement>(null)
@@ -63,8 +38,8 @@ export function Header() {
           const wordClip = header.querySelector<HTMLElement>('[data-logo-word-clip]')
           if (!bar || !wrap || !mark || !wordClip) return
 
-          const expandedBar = isDesktop ? 104 : 88
-          const compactBar = 56
+          const expandedBar = isDesktop ? HEADER_EXPANDED_DESKTOP : HEADER_EXPANDED_MOBILE
+          const compactBar = HEADER_COMPACT
           const compactLogo = 36
           const heightDelta = expandedBar - compactBar
           const enterAt = heightDelta + 24
@@ -110,27 +85,35 @@ export function Header() {
             )
 
           let compact = window.scrollY > enterAt
-          tl.progress(compact ? 1 : 0)
-          header.dataset.compact = compact ? 'true' : 'false'
-          setWord(compact, true)
+
+          const setCompact = (next: boolean, instant = false) => {
+            if (compact === next) {
+              if (instant) {
+                header.dataset.compact = next ? 'true' : 'false'
+                tl.progress(next ? 1 : 0)
+                setWord(next, true)
+              }
+              return
+            }
+            compact = next
+            header.dataset.compact = next ? 'true' : 'false'
+            setWord(next, instant)
+            if (instant) {
+              tl.progress(next ? 1 : 0)
+              return
+            }
+            if (next) tl.play()
+            else tl.reverse()
+          }
+
+          setCompact(compact, true)
 
           ScrollTrigger.create({
-            start: 0,
-            end: 'max',
-            onUpdate: (self) => {
-              const y = self.scroll()
-              if (!compact && y > enterAt) {
-                compact = true
-                header.dataset.compact = 'true'
-                setWord(true)
-                tl.play()
-              } else if (compact && y < leaveAt) {
-                compact = false
-                header.dataset.compact = 'false'
-                setWord(false)
-                tl.reverse()
-              }
-            },
+            start: leaveAt,
+            end: enterAt,
+            onRefresh: (self) => setCompact(self.scroll() > enterAt, true),
+            onLeave: () => setCompact(true, isBooting()),
+            onLeaveBack: () => setCompact(false, isBooting()),
           })
         },
       )

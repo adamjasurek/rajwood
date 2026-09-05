@@ -7,7 +7,7 @@ export const site = {
   ico: '000000000',
   credit: 'Vytvořil Adam Jašúrek',
   creditHref: 'https://adamjasurek.cz',
-  email: '',
+  email: 'lukas@rajwood.com',
   warrantyYears: 'X',
   logo: {
     src: '/images/logo.png',
@@ -44,11 +44,23 @@ export const site = {
     id: 'sluzby',
     title: 'Dřevostavby',
     titleRest: 'všeho druhu',
-    image: {
-      src: '/images/pergola2/pergola2-01.jpg',
-      alt: 'Zakázková dřevěná pergola s posezením',
-      caption: 'Pergola / Dolní Domaslavice',
-    },
+    images: [
+      {
+        src: '/images/vstup/vstup-01.webp',
+        alt: 'Dřevěný přístřešek nad vstupem',
+        caption: 'Přístřešek / Hnojník',
+      },
+      {
+        src: '/images/pergola2/pergola2-01.jpg',
+        alt: 'Zakázková dřevěná pergola s posezením',
+        caption: 'Pergola / Dolní Domaslavice',
+      },
+      {
+        src: '/images/stani/stani-01.webp',
+        alt: 'Dřevěné stání s dlažbou před domem',
+        caption: 'Stání / Kunčičky u Bašky',
+      },
+    ],
     items: [
       {
         name: 'Přístřešky',
@@ -104,6 +116,18 @@ export const site = {
     },
     projects: [
       {
+        slug: 'stani',
+        name: 'Stání / Kunčičky u Bašky / 2026',
+        photos: [
+          { src: '/images/stani/stani-01.webp', alt: 'Dřevěné stání s dlažbou před domem' },
+          { src: '/images/stani/stani-02.webp', alt: 'Roh dřevěného plotu u stání' },
+          { src: '/images/stani/stani-03.webp', alt: 'Dlažba stání z nadhledu' },
+          { src: '/images/stani/stani-04.webp', alt: 'Pohled ze stání k domu' },
+          { src: '/images/stani/stani-05.webp', alt: 'Boční pohled na stání u louky' },
+          { src: '/images/stani/stani-06.webp', alt: 'Stání s plotem a příjezdem' },
+        ],
+      },
+      {
         slug: 'pergola2',
         name: 'Pergola / Dolní Domaslavice / 2026',
         photos: [
@@ -140,6 +164,7 @@ export const site = {
     kicker: 'Kontakt',
     title: 'Máte zájem? Kontaktujte nás.',
     or: 'nebo',
+    hours: 'Volejte po–pá 8–16',
     form: {
       firstName: 'Jméno',
       lastName: 'Příjmení',

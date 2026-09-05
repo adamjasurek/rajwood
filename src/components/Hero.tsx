@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { HashLink } from './HashLink'
+import { WoodBackdrop } from './WoodBackdrop'
 import { site } from '../content/site'
 import { gsap, useGSAP } from '../lib/gsap'
 
@@ -11,6 +12,8 @@ export function Hero() {
       const mm = gsap.matchMedia()
 
       mm.add('(prefers-reduced-motion: no-preference)', () => {
+        if (window.location.hash || window.scrollY > 80) return
+
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
 
         tl.from('[data-hero-copy]', {
@@ -55,9 +58,10 @@ export function Hero() {
           <div data-hero-copy className="mt-8">
             <HashLink
               to={site.hero.ctaHref}
-              className="inline-flex h-12 items-center justify-center bg-wood px-7 text-[0.95rem] font-medium tracking-wide text-paper no-underline transition-colors duration-300 hover:bg-wood-deep"
+              className="btn-wood inline-flex h-12 items-center justify-center px-7 text-[0.95rem] font-medium tracking-wide text-paper no-underline"
             >
-              {site.hero.cta}
+              <WoodBackdrop />
+              <span className="relative z-[1]">{site.hero.cta}</span>
             </HashLink>
           </div>
         </div>

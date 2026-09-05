@@ -1,20 +1,34 @@
 type ScrollKind = 'auto' | 'smooth'
 
+export const HEADER_COMPACT = 56
+export const HEADER_EXPANDED_DESKTOP = 104
+export const HEADER_EXPANDED_MOBILE = 88
+
 let scrollFrame = 0
 let restoreBehavior: string | null = null
 let restoreAnchor: string | null = null
+let interruptBound = false
 
 function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
-function headerOffset() {
-  const header = document.querySelector('header')
-  return Math.round(header?.getBoundingClientRect().height ?? 72)
+export function expandedHeaderHeight() {
+  return window.matchMedia('(min-width: 768px)').matches
+    ? HEADER_EXPANDED_DESKTOP
+    : HEADER_EXPANDED_MOBILE
+}
+
+export function headerOffset(scrollY = window.scrollY) {
+  const expanded = expandedHeaderHeight()
+  const enterAt = expanded - HEADER_COMPACT + 24
+  return scrollY > enterAt ? HEADER_COMPACT : expanded
 }
 
 function targetTop(el: HTMLElement) {
-  return Math.max(0, el.getBoundingClientRect().top + window.scrollY - headerOffset())
+  const y = el.getBoundingClientRect().top + window.scrollY
+  const dest = Math.max(0, y - HEADER_COMPACT)
+  return Math.max(0, y - headerOffset(dest))
 }
 
 function stopAnimatedScroll() {
@@ -31,7 +45,34 @@ function stopAnimatedScroll() {
   }
 }
 
+function bindScrollInterrupt() {
+  if (interruptBound) return
+  interruptBound = true
+
+  const interrupt = () => {
+    if (!scrollFrame) return
+    stopAnimatedScroll()
+  }
+
+  window.addEventListener('wheel', interrupt, { passive: true })
+  window.addEventListener('touchstart', interrupt, { passive: true })
+  window.addEventListener('keydown', (event) => {
+    if (
+      event.key === 'ArrowUp' ||
+      event.key === 'ArrowDown' ||
+      event.key === 'PageUp' ||
+      event.key === 'PageDown' ||
+      event.key === 'Home' ||
+      event.key === 'End' ||
+      event.key === ' '
+    ) {
+      interrupt()
+    }
+  })
+}
+
 function animateScrollTo(top: number) {
+  bindScrollInterrupt()
   stopAnimatedScroll()
 
   const html = document.documentElement

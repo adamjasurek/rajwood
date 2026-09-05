@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { site } from '../content/site'
-import { gsap, useGSAP } from '../lib/gsap'
+import { gsap, SplitText, useGSAP } from '../lib/gsap'
 
 export function Values() {
   const root = useRef<HTMLElement>(null)
@@ -10,23 +10,45 @@ export function Values() {
       const mm = gsap.matchMedia()
 
       mm.add('(prefers-reduced-motion: no-preference)', () => {
+        const kicker = root.current?.querySelector<HTMLElement>('[data-kicker]')
+        const title = root.current?.querySelector<HTMLElement>('[data-title]')
+        if (!kicker || !title) return
+
+        const kickerSplit = SplitText.create(kicker, {
+          type: 'chars',
+          mask: 'chars',
+          smartWrap: true,
+        })
+        const titleSplit = SplitText.create(title, {
+          type: 'words,lines',
+          mask: 'lines',
+        })
+
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: root.current,
-            start: 'top 82%',
+            start: 'top 90%',
           },
         })
 
-        tl.from('[data-fade]', {
-          y: 28,
-          autoAlpha: 0,
-          duration: 0.8,
-          stagger: 0.1,
+        tl.from(kickerSplit.chars, {
+          yPercent: 115,
+          duration: 0.7,
+          stagger: 0.032,
         })
+          .from(
+            titleSplit.lines,
+            {
+              yPercent: 110,
+              duration: 0.95,
+              stagger: 0.12,
+            },
+            '+=0.38',
+          )
           .from(
             '[data-beam]',
             { scaleX: 0, duration: 0.75, ease: 'power2.inOut' },
-            '-=0.15',
+            '-=0.2',
           )
           .from(
             '[data-value]',
@@ -36,7 +58,7 @@ export function Values() {
               duration: 0.8,
               stagger: 0.1,
             },
-            '-=0.2',
+            '-=0.25',
           )
       })
 
@@ -53,13 +75,13 @@ export function Values() {
     >
       <div className="mx-auto max-w-[1120px] px-5">
         <p
-          data-fade
+          data-kicker
           className="mb-3 text-center text-[0.72rem] font-medium uppercase tracking-[0.22em] text-mute"
         >
           {site.values.kicker}
         </p>
         <h2
-          data-fade
+          data-title
           className="mx-auto max-w-[20ch] text-center font-serif text-[2rem] font-medium leading-tight tracking-[-0.02em] sm:text-[2.5rem]"
         >
           {site.values.title}

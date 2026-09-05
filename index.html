@@ -4,6 +4,23 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      html,
+      body {
+        background: #f6f3ee;
+        margin: 0;
+      }
+      html.is-booting {
+        overflow: hidden;
+      }
+      html.is-booting #root {
+        opacity: 0;
+      }
+    </style>
+    <script>
+      history.scrollRestoration = 'manual'
+      document.documentElement.classList.add('is-booting')
+    </script>
     <meta
       name="description"
       content="Zakázkové pergoly, přístřešky a zahradní boudy. RAJWOOD, Hnojník. Moravskoslezský kraj."
