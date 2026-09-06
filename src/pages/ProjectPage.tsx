@@ -63,18 +63,18 @@ export function ProjectPage() {
           <HashLink
             data-fade
             to="/#realizace"
-            className="text-[0.72rem] font-medium uppercase tracking-[0.18em] text-wood no-underline underline-offset-4 transition-colors hover:text-wood-deep hover:underline"
+            className="inline-flex min-h-11 items-center text-[0.72rem] font-medium uppercase tracking-[0.18em] text-wood no-underline underline-offset-4 transition-colors hover:text-wood-deep hover:underline sm:min-h-0"
           >
             {site.gallery.back}
           </HashLink>
           <h1
             data-fade
-            className="mt-5 font-serif text-[2rem] font-medium leading-tight tracking-[-0.02em] sm:text-[2.5rem]"
+            className="mt-3 font-serif text-[2rem] font-medium leading-tight tracking-[-0.02em] sm:mt-5 sm:text-[2.5rem]"
           >
             {project.name}
           </h1>
 
-          <div className="mt-10 grid grid-cols-2 gap-2 sm:mt-12 sm:gap-3 lg:grid-cols-3 lg:gap-4">
+          <div className="mt-8 grid grid-cols-1 gap-3 sm:mt-12 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3 lg:gap-4">
             {project.photos.map((photo, index) => (
               <button
                 key={photo.src}

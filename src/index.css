@@ -14,10 +14,14 @@
 }
 
 html {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
   scroll-behavior: auto;
-  scroll-padding-top: 3.5rem;
+  scroll-padding-top: calc(3.5rem + var(--safe-top));
   overflow-anchor: none;
   scrollbar-gutter: stable;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 html.is-booting {
@@ -38,6 +42,7 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
 }
 
 #root {
@@ -47,6 +52,10 @@ body {
 ::selection {
   background: color-mix(in srgb, var(--color-wood) 22%, white);
   color: var(--color-ink);
+}
+
+a, button {
+  touch-action: manipulation;
 }
 
 a:focus-visible,

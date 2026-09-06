@@ -4,6 +4,12 @@ export const HEADER_COMPACT = 56
 export const HEADER_EXPANDED_DESKTOP = 104
 export const HEADER_EXPANDED_MOBILE = 88
 
+export function safeTop() {
+  const raw = getComputedStyle(document.documentElement).getPropertyValue('--safe-top')
+  const value = Number.parseFloat(raw)
+  return Number.isFinite(value) ? value : 0
+}
+
 let scrollFrame = 0
 let restoreBehavior: string | null = null
 let restoreAnchor: string | null = null
@@ -22,12 +28,13 @@ export function expandedHeaderHeight() {
 export function headerOffset(scrollY = window.scrollY) {
   const expanded = expandedHeaderHeight()
   const enterAt = expanded - HEADER_COMPACT + 24
-  return scrollY > enterAt ? HEADER_COMPACT : expanded
+  const bar = scrollY > enterAt ? HEADER_COMPACT : expanded
+  return bar + safeTop()
 }
 
 function targetTop(el: HTMLElement) {
   const y = el.getBoundingClientRect().top + window.scrollY
-  const dest = Math.max(0, y - HEADER_COMPACT)
+  const dest = Math.max(0, y - HEADER_COMPACT - safeTop())
   return Math.max(0, y - headerOffset(dest))
 }
 

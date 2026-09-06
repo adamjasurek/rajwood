@@ -71,7 +71,7 @@ export function Values() {
     <section
       ref={root}
       id={site.values.id}
-      className="border-b border-line bg-paper-2 py-16 sm:py-20 lg:py-24"
+      className="border-b border-line bg-paper-2 py-14 sm:py-20 lg:py-24"
     >
       <div className="mx-auto max-w-[1120px] px-5">
         <p
@@ -92,7 +92,7 @@ export function Values() {
           className="mx-auto mt-7 h-px w-24 origin-center bg-wood sm:mt-8"
         />
 
-        <ol className="mt-10 grid gap-x-8 gap-y-10 sm:mt-14 sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="mt-10 grid gap-x-8 gap-y-9 sm:mt-14 sm:grid-cols-2 sm:gap-y-10 lg:grid-cols-4">
           {site.values.items.map((item) => (
             <li key={item.num} data-value>
               <p className="text-[0.72rem] tracking-[0.18em] text-wood">

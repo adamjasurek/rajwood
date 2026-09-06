@@ -135,8 +135,8 @@ export function Footer() {
           <p className="mt-7 text-[0.9rem] text-mute">{site.footer.hours}</p>
         </article>
 
-        <div data-fade className="mt-14 border-t border-line pt-8">
-          <div className="flex items-center justify-between gap-6">
+        <div data-fade className="mt-12 border-t border-line pt-8 sm:mt-14">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
             <div className="flex items-center gap-4">
               <Link
                 to="/"
@@ -165,14 +165,14 @@ export function Footer() {
                       target="_blank"
                       rel="noreferrer"
                       aria-label={item.label}
-                      className="flex h-10 w-10 items-center justify-center border border-line text-ink no-underline"
+                      className="flex h-11 w-11 items-center justify-center border border-line text-ink no-underline"
                     >
                       {item.icon}
                     </a>
                   ) : (
                     <span
                       aria-label={`${item.label} — odkaz doplníme`}
-                      className="flex h-10 w-10 items-center justify-center border border-line text-mute"
+                      className="flex h-11 w-11 items-center justify-center border border-line text-mute"
                     >
                       {item.icon}
                     </span>
@@ -183,13 +183,13 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 border-t border-line pt-5 pb-[max(5.75rem,calc(env(safe-area-inset-bottom)+4.75rem))] md:pb-5">
-          <div className="grid grid-cols-3 items-center gap-2 text-[0.68rem] leading-snug text-mute sm:gap-6 sm:text-[0.9rem]">
-            <p className="justify-self-start">IČO: {site.ico}</p>
-            <p className="justify-self-center text-center">
+        <div className="mt-8 border-t border-line pt-5 pb-[max(5.5rem,calc(env(safe-area-inset-bottom)+4.5rem))] md:mt-10 md:pb-5">
+          <div className="flex flex-col items-center gap-2 text-center text-[0.82rem] leading-snug text-mute sm:grid sm:grid-cols-3 sm:items-center sm:gap-6 sm:text-[0.9rem]">
+            <p className="sm:justify-self-start sm:text-left">IČO: {site.ico}</p>
+            <p className="sm:justify-self-center">
               {site.owner} © {year}
             </p>
-            <p className="justify-self-end text-right">
+            <p className="sm:justify-self-end sm:text-right">
               <a
                 href={site.creditHref}
                 target="_blank"

@@ -57,7 +57,7 @@ export function Lightbox({ photos, startIndex, onClose }: LightboxProps) {
         type="button"
         onClick={onClose}
         aria-label={copy.close}
-        className="absolute right-4 top-4 z-10 flex h-11 w-11 cursor-pointer items-center justify-center text-paper transition-opacity hover:opacity-70 focus-visible:outline-paper sm:right-6 sm:top-6"
+        className="absolute right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-10 flex h-12 w-12 cursor-pointer items-center justify-center text-paper transition-opacity hover:opacity-70 focus-visible:outline-paper sm:right-6 sm:top-6 sm:h-11 sm:w-11"
       >
         <svg viewBox="0 0 24 24" className="h-7 w-7" aria-hidden="true">
           <path
@@ -78,7 +78,7 @@ export function Lightbox({ photos, startIndex, onClose }: LightboxProps) {
               go(-1)
             }}
             aria-label={copy.prev}
-            className="absolute left-2 z-10 flex h-12 w-12 cursor-pointer items-center justify-center text-paper transition-opacity hover:opacity-70 focus-visible:outline-paper sm:left-4 sm:h-14 sm:w-14"
+            className="absolute left-1 z-10 flex h-12 w-12 cursor-pointer items-center justify-center text-paper transition-opacity hover:opacity-70 focus-visible:outline-paper sm:left-4 sm:h-14 sm:w-14"
           >
             <svg viewBox="0 0 24 24" className="h-8 w-8" aria-hidden="true">
               <path
@@ -97,7 +97,7 @@ export function Lightbox({ photos, startIndex, onClose }: LightboxProps) {
               go(1)
             }}
             aria-label={copy.next}
-            className="absolute right-2 z-10 flex h-12 w-12 cursor-pointer items-center justify-center text-paper transition-opacity hover:opacity-70 focus-visible:outline-paper sm:right-4 sm:h-14 sm:w-14"
+            className="absolute right-1 z-10 flex h-12 w-12 cursor-pointer items-center justify-center text-paper transition-opacity hover:opacity-70 focus-visible:outline-paper sm:right-4 sm:h-14 sm:w-14"
           >
             <svg viewBox="0 0 24 24" className="h-8 w-8" aria-hidden="true">
               <path
@@ -113,7 +113,7 @@ export function Lightbox({ photos, startIndex, onClose }: LightboxProps) {
       ) : null}
 
       <figure
-        className="flex max-h-[100svh] max-w-[100vw] flex-col items-center px-12 py-16 sm:px-20"
+        className="flex max-h-[100svh] max-w-[100vw] flex-col items-center px-4 py-20 sm:px-20 sm:py-16"
         onClick={(event) => event.stopPropagation()}
         onTouchStart={(event) => {
           touchX.current = event.changedTouches[0]?.clientX ?? null
@@ -131,7 +131,7 @@ export function Lightbox({ photos, startIndex, onClose }: LightboxProps) {
         <img
           src={photo.src}
           alt={photo.alt}
-          className="max-h-[min(82svh,900px)] w-auto max-w-full object-contain"
+          className="max-h-[min(78svh,900px)] w-auto max-w-full object-contain"
         />
         <figcaption className="mt-4 text-center text-[0.78rem] tracking-[0.16em] text-paper/70">
           {index + 1} / {photos.length}

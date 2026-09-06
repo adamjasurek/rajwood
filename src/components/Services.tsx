@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { site } from '../content/site'
 import { gsap, ScrollTrigger, useGSAP } from '../lib/gsap'
+import { HEADER_COMPACT, safeTop } from '../lib/scroll'
 
 const photos = site.services.images
 
@@ -132,10 +133,21 @@ export function Services() {
             if (slides.length > 1 && photo) cutTo(slideAt(progress))
           }
 
+          const scanLine = () => {
+            if (window.matchMedia('(min-width: 768px)').matches) return null
+            return HEADER_COMPACT + safeTop() + (photo?.offsetHeight ?? 0)
+          }
+
           ScrollTrigger.create({
             trigger: list,
-            start: 'top 55%',
-            end: 'bottom 55%',
+            start: () => {
+              const line = scanLine()
+              return line == null ? 'top 55%' : `top ${line}px`
+            },
+            end: () => {
+              const line = scanLine()
+              return line == null ? 'bottom 55%' : `bottom ${line}px`
+            },
             invalidateOnRefresh: true,
             onRefresh: (self) => {
               measure()
@@ -159,8 +171,8 @@ export function Services() {
       id={site.services.id}
       className="border-b border-line"
     >
-      <div className="mx-auto grid max-w-[1120px] px-5 pb-16 pt-16 sm:pb-20 sm:pt-20 lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-x-14 lg:gap-y-12 lg:pb-24 lg:pt-24 xl:gap-x-16">
-        <header className="order-1 lg:col-span-2 lg:row-start-1">
+      <div className="mx-auto grid max-w-[1120px] px-5 pb-16 pt-16 sm:pb-20 sm:pt-20 md:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)] md:gap-x-10 md:gap-y-12 lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-x-14 lg:pb-24 lg:pt-24 xl:gap-x-16">
+        <header className="md:col-span-2 md:row-start-1">
           <h2
             data-fade
             className="text-center font-serif font-medium leading-[1.08] tracking-[-0.03em]"
@@ -174,10 +186,11 @@ export function Services() {
           </h2>
         </header>
 
-        <figure className="relative order-2 mt-8 lg:col-start-1 lg:row-start-2 lg:mt-0 lg:h-full">
+        <div className="md:contents">
+          <figure className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-[1] mt-8 isolate bg-paper shadow-[0_16px_28px_rgba(26,22,18,0.12)] md:relative md:top-auto md:z-auto md:col-start-1 md:row-start-2 md:mt-0 md:h-full md:shadow-none">
           <div
             data-service-photo
-            className="relative aspect-[4/5] overflow-hidden sm:aspect-[5/6] lg:absolute lg:inset-0 lg:h-full lg:aspect-auto"
+            className="relative aspect-[4/3] overflow-hidden md:absolute md:inset-0 md:aspect-auto md:h-full"
           >
             {photos.map((image, index) => (
               <div
@@ -228,7 +241,7 @@ export function Services() {
 
         <div
           data-service-list
-          className="relative order-3 mt-8 border-b border-line lg:col-start-2 lg:row-start-2 lg:mt-0 lg:max-w-[40rem]"
+          className="relative mt-8 border-b border-line pb-10 md:col-start-2 md:row-start-2 md:mt-0 md:max-w-[40rem] md:pb-0"
         >
           <span
             data-service-mark
@@ -251,6 +264,7 @@ export function Services() {
               </div>
             </article>
           ))}
+        </div>
         </div>
       </div>
     </section>

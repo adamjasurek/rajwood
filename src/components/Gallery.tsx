@@ -17,11 +17,15 @@ function PhotoButton({
   onOpen,
   overlay,
   label,
+  className = '',
+  imgClassName = 'aspect-[4/5]',
 }: {
   photo: Photo
   onOpen: () => void
   overlay?: string
   label: string
+  className?: string
+  imgClassName?: string
 }) {
   return (
     <button
@@ -29,13 +33,13 @@ function PhotoButton({
       data-shot
       onClick={onOpen}
       aria-label={label}
-      className="group relative block w-full cursor-pointer overflow-hidden border-0 bg-transparent p-0 text-left"
+      className={`group relative block w-full cursor-pointer overflow-hidden border-0 bg-transparent p-0 text-left ${className}`}
     >
       <img
         src={photo.src}
         alt=""
         loading="lazy"
-        className={`aspect-[4/5] w-full object-cover ${
+        className={`w-full object-cover ${imgClassName} ${
           overlay ? 'scale-110 blur-[8px]' : ''
         }`}
       />
@@ -63,14 +67,14 @@ function ProjectPreview({ project }: { project: Project }) {
     <div>
       <div
         data-fade
-        className="mb-5 flex items-start justify-between gap-4 sm:mb-7"
+        className="mb-5 flex flex-col gap-2 sm:mb-7 sm:flex-row sm:items-start sm:justify-between sm:gap-4"
       >
         <h3 className="font-serif text-[1.65rem] font-medium tracking-[-0.02em] sm:text-[1.85rem]">
           {project.name}
         </h3>
         <Link
           to={projectPath(project.slug)}
-          className="mt-1 shrink-0 text-[0.72rem] font-medium uppercase tracking-[0.18em] text-wood no-underline underline-offset-4 transition-colors hover:text-wood-deep hover:underline sm:mt-2 sm:text-[0.78rem]"
+          className="inline-flex min-h-11 shrink-0 items-center text-[0.72rem] font-medium uppercase tracking-[0.18em] text-wood no-underline underline-offset-4 transition-colors hover:text-wood-deep hover:underline sm:mt-1 sm:min-h-0 sm:text-[0.78rem]"
         >
           {site.gallery.showMore}
         </Link>
@@ -78,7 +82,7 @@ function ProjectPreview({ project }: { project: Project }) {
 
       <div
         className={`grid gap-2 sm:gap-3 lg:gap-4 ${
-          teaser ? 'grid-cols-3' : 'grid-cols-2'
+          teaser ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'
         }`}
       >
         {preview.map((photo, index) => (
@@ -87,6 +91,14 @@ function ProjectPreview({ project }: { project: Project }) {
             photo={photo}
             label={photo.alt}
             onOpen={() => setLightbox(index)}
+            className={
+              teaser && index === 0 ? 'col-span-2 md:col-span-1' : undefined
+            }
+            imgClassName={
+              teaser && index === 0
+                ? 'aspect-[4/3] md:aspect-[4/5]'
+                : 'aspect-[4/5]'
+            }
           />
         ))}
         {teaser ? (
@@ -173,7 +185,7 @@ export function Gallery() {
           {site.gallery.title}
         </h2>
 
-        <div className="mt-12 flex flex-col gap-14 sm:mt-16 sm:gap-20">
+        <div className="mt-10 flex flex-col gap-12 sm:mt-16 sm:gap-20">
           {site.gallery.projects.map((project) => (
             <ProjectPreview key={project.slug} project={project} />
           ))}
