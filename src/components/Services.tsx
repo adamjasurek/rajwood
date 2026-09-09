@@ -35,6 +35,22 @@ export function Services() {
           stagger: 0.1,
         })
 
+        const underline = scopeEl?.querySelector<SVGPathElement>(
+          '[data-title-underline]',
+        )
+        if (underline) {
+          tl.fromTo(
+            underline,
+            { drawSVG: 0 },
+            {
+              drawSVG: '100%',
+              duration: 2.2,
+              ease: 'power1.inOut',
+            },
+            0.42,
+          )
+        }
+
         if (wipe) {
           tl.fromTo(
             wipe,
@@ -52,8 +68,6 @@ export function Services() {
         if (slides.length > 1 && photo) {
           gsap.set(slides.slice(1), { autoAlpha: 0 })
           gsap.set(captions.slice(1), { autoAlpha: 0 })
-          const flash = photo.querySelector<HTMLElement>('[data-service-flash]')
-          if (flash) gsap.set(flash, { autoAlpha: 0 })
         }
 
         tl.from(
@@ -72,8 +86,6 @@ export function Services() {
         if (list && rows.length) {
           const smooth = { duration: 0.22, ease: 'power2.out' as const }
           const mark = list.querySelector<HTMLElement>('[data-service-mark]')
-          const flash = photo?.querySelector<HTMLElement>('[data-service-flash]')
-
           if (mark) gsap.set(mark, { scaleY: 0 })
           const markTo = mark ? gsap.quickTo(mark, 'scaleY', smooth) : null
           const shiftTo = rows.map((row) => {
@@ -95,11 +107,6 @@ export function Services() {
             })
           }
 
-          const showSlide = (index: number) => {
-            gsap.set(slides, { autoAlpha: (i: number) => (i === index ? 1 : 0) })
-            gsap.set(captions, { autoAlpha: (i: number) => (i === index ? 1 : 0) })
-          }
-
           const slideAt = (progress: number) => {
             if (!ranges.length || slides.length === 0) return 0
             const i = ranges.findIndex((range) => progress < range.end - 0.001)
@@ -107,17 +114,21 @@ export function Services() {
             return Math.min(row, slides.length - 1)
           }
 
-          const cutTo = (index: number) => {
+          const fadeTo = (index: number) => {
             if (index === current) return
-            const first = current === -1
+            const instant = current < 0
             current = index
-            showSlide(index)
-            if (first || !flash) return
-            gsap.fromTo(
-              flash,
-              { autoAlpha: 1 },
-              { autoAlpha: 0, duration: 0.16, ease: 'power1.out', overwrite: true },
-            )
+            const fade = {
+              duration: instant ? 0 : 0.28,
+              ease: 'power1.out' as const,
+              overwrite: true as const,
+            }
+            slides.forEach((slide, i) => {
+              gsap.to(slide, { autoAlpha: i === index ? 1 : 0, ...fade })
+            })
+            captions.forEach((caption, i) => {
+              gsap.to(caption, { autoAlpha: i === index ? 1 : 0, ...fade })
+            })
           }
 
           const apply = (progress: number) => {
@@ -130,7 +141,7 @@ export function Services() {
                   : gsap.utils.clamp(0, 1, (progress - range.start) / span)
               shiftTo[i]?.(amount * 10)
             })
-            if (slides.length > 1 && photo) cutTo(slideAt(progress))
+            if (slides.length > 1 && photo) fadeTo(slideAt(progress))
           }
 
           const scanLine = () => {
@@ -153,7 +164,6 @@ export function Services() {
               measure()
               current = -1
               apply(self.progress)
-              if (flash) gsap.set(flash, { autoAlpha: 0 })
             },
             onUpdate: (self) => apply(self.progress),
           })
@@ -180,8 +190,25 @@ export function Services() {
             <span className="block text-[2.35rem] sm:text-[3.15rem] lg:text-[3.5rem]">
               {site.services.title}
             </span>
-            <span className="mt-1 block font-serif text-[1.85rem] font-normal italic tracking-[-0.02em] text-mute sm:text-[2.35rem]">
+            <span className="relative mt-1 inline-block pb-[0.22em] font-serif text-[1.85rem] font-normal italic tracking-[-0.02em] text-mute sm:text-[2.35rem]">
               {site.services.titleRest}
+              <svg
+                aria-hidden
+                className="pointer-events-none absolute left-[-4%] top-[0.92em] h-[0.5em] w-[110%] overflow-visible text-wood"
+                viewBox="0 0 220 18"
+                fill="none"
+                preserveAspectRatio="none"
+              >
+                <path
+                  data-title-underline
+                  d="M2.6 13.2 C 38 17.4, 72 6.8, 112 11.4 C 148 15.6, 178 16.2, 217.2 7.4"
+                  stroke="currentColor"
+                  strokeWidth="2.15"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
             </span>
           </h2>
         </header>
@@ -210,12 +237,7 @@ export function Services() {
             <span
               data-service-wipe
               aria-hidden
-              className="absolute inset-0 z-[2] -translate-y-[101%] bg-paper"
-            />
-            <span
-              data-service-flash
-              aria-hidden
-              className="pointer-events-none absolute inset-0 z-[4] bg-paper opacity-0"
+              className="absolute inset-0 z-[6] -translate-y-[101%] bg-paper"
             />
             <span
               aria-hidden

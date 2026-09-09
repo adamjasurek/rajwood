@@ -26,7 +26,7 @@ export const site = {
   hero: {
     kicker: 'Po celém Moravskoslezském kraji',
     title: 'Dřevěné pergoly\nna míru',
-    subtitle: 'Stavíme zakázkové pergoly, přístřešky a zahradní boudy.',
+    subtitle: 'Stavíme zakázkové pergoly, přístřešky a zahradní kůlny.',
     cta: 'Prohlédnout práce',
     ctaHref: '/#realizace',
     image: {
@@ -71,33 +71,29 @@ export const site = {
         text: 'Otevřené i se střechou. Na terasu, k domu, nebo volně do zahrady.',
       },
       {
-        name: 'Boudy',
+        name: 'Kůlny',
         text: 'Nářaďovny a úložné stavby. Jednoduché, suché, navržené tak, aby vydržely.',
       },
     ],
   },
   values: {
     id: 'proc',
-    kicker: 'Proč RAJWOOD',
+    kicker: 'Proč RAJWOOD?',
     title: 'Stojíme si za svou prací.',
     items: [
       {
-        num: '01',
         name: 'Rychlé zpracování',
         text: 'Ozveme se. Domluvíme termín. Držíme ho.',
       },
       {
-        num: '02',
         name: 'Férová cena',
         text: 'Cenu řekneme dopředu. Na konci žádné překvapení.',
       },
       {
-        num: '03',
-        name: 'Kvalitní práce',
+        name: 'Poctivé řemeslo',
         text: 'Pořádné spoje, pořádné dřevo, pořádná montáž.',
       },
       {
-        num: '04',
         name: 'Záruka',
         text: 'Na konstrukci dáváme záruku. Když něco není v pořádku, řešíme to.',
       },
@@ -105,10 +101,7 @@ export const site = {
   },
   gallery: {
     id: 'realizace',
-    kicker: 'Realizace',
-    title: 'Práce, která je vidět.',
-    showMore: 'Zobrazit více',
-    back: 'Zpět na realizace',
+    title: 'Vybrané realizace',
     lightbox: {
       close: 'Zavřít',
       prev: 'Předchozí fotka',
@@ -161,7 +154,6 @@ export const site = {
   },
   footer: {
     id: 'kontakt',
-    kicker: 'Kontakt',
     title: 'Máte zájem? Kontaktujte nás.',
     or: 'nebo',
     hours: 'Volejte po–pá 8–16',
@@ -189,14 +181,6 @@ export const site = {
 
 export type Project = (typeof site.gallery.projects)[number]
 export type Photo = Project['photos'][number]
-
-export function getProject(slug: string | undefined) {
-  return site.gallery.projects.find((project) => project.slug === slug)
-}
-
-export function projectPath(slug: string) {
-  return `/realizace/${slug}`
-}
 
 export function extraPhotoLabel(count: number) {
   const n = Math.abs(count)

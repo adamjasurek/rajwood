@@ -95,7 +95,7 @@ function animateScrollTo(top: number) {
     return
   }
 
-  const duration = Math.min(400, Math.max(180, Math.abs(dist) * 0.22))
+  const duration = Math.min(560, Math.max(280, Math.abs(dist) * 0.34))
   const t0 = performance.now()
 
   const step = (now: number) => {

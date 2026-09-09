@@ -33,32 +33,32 @@ export function Values() {
 
         tl.from(kickerSplit.chars, {
           yPercent: 115,
-          duration: 0.7,
-          stagger: 0.032,
+          duration: 0.5,
+          stagger: 0.022,
         })
           .from(
             titleSplit.lines,
             {
               yPercent: 110,
-              duration: 0.95,
-              stagger: 0.12,
+              duration: 0.68,
+              stagger: 0.08,
             },
-            '+=0.38',
+            '+=0.18',
           )
           .from(
             '[data-beam]',
-            { scaleX: 0, duration: 0.75, ease: 'power2.inOut' },
-            '-=0.2',
+            { scaleX: 0, duration: 0.52, ease: 'power2.inOut' },
+            '-=0.18',
           )
           .from(
             '[data-value]',
             {
               y: 28,
               autoAlpha: 0,
-              duration: 0.8,
-              stagger: 0.1,
+              duration: 0.56,
+              stagger: 0.07,
             },
-            '-=0.25',
+            '-=0.22',
           )
       })
 
@@ -92,14 +92,11 @@ export function Values() {
           className="mx-auto mt-7 h-px w-24 origin-center bg-wood sm:mt-8"
         />
 
-        <ol className="mt-10 grid gap-x-8 gap-y-9 sm:mt-14 sm:grid-cols-2 sm:gap-y-10 lg:grid-cols-4">
+        <ul className="mt-10 grid gap-x-8 gap-y-9 sm:mt-14 sm:grid-cols-2 sm:gap-y-10 lg:grid-cols-4">
           {site.values.items.map((item) => (
-            <li key={item.num} data-value>
-              <p className="text-[0.72rem] tracking-[0.18em] text-wood">
-                {item.num}
-              </p>
-              <h3 className="mt-3 font-serif text-[1.45rem] font-medium tracking-[-0.02em]">
-                {item.num === '04'
+            <li key={item.name} data-value>
+              <h3 className="font-serif text-[1.45rem] font-medium tracking-[-0.02em]">
+                {item.name === 'Záruka'
                   ? `Záruka ${site.warrantyYears} let`
                   : item.name}
               </h3>
@@ -108,7 +105,7 @@ export function Values() {
               </p>
             </li>
           ))}
-        </ol>
+        </ul>
       </div>
     </section>
   )

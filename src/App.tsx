@@ -1,7 +1,6 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import { HomePage } from './pages/HomePage'
-import { ProjectPage } from './pages/ProjectPage'
 
 export default function App() {
   return (
@@ -9,7 +8,10 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
-          <Route path="/realizace/:slug" element={<ProjectPage />} />
+          <Route
+            path="/realizace/:slug"
+            element={<Navigate to="/#realizace" replace />}
+          />
         </Route>
       </Routes>
     </BrowserRouter>

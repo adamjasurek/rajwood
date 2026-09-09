@@ -66,12 +66,6 @@ export function Footer() {
       className="pt-16 sm:pt-20 lg:pt-24"
     >
       <div className="mx-auto max-w-[1120px] px-5">
-        <p
-          data-fade
-          className="mb-3 text-center text-[0.72rem] font-medium uppercase tracking-[0.22em] text-mute"
-        >
-          {site.footer.kicker}
-        </p>
         <h2
           data-fade
           className="mx-auto max-w-[14ch] text-center font-serif text-[2.15rem] font-medium leading-tight tracking-[-0.02em] sm:text-[3rem]"

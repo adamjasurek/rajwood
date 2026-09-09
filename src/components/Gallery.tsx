@@ -1,8 +1,6 @@
 import { useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
 import {
   extraPhotoLabel,
-  projectPath,
   site,
   type Photo,
   type Project,
@@ -17,6 +15,7 @@ function PhotoButton({
   onOpen,
   overlay,
   label,
+  extra,
   className = '',
   imgClassName = 'aspect-[4/5]',
 }: {
@@ -24,6 +23,7 @@ function PhotoButton({
   onOpen: () => void
   overlay?: string
   label: string
+  extra?: boolean
   className?: string
   imgClassName?: string
 }) {
@@ -31,15 +31,17 @@ function PhotoButton({
     <button
       type="button"
       data-shot
+      data-extra={extra ? '' : undefined}
       onClick={onOpen}
       aria-label={label}
+      aria-expanded={overlay ? false : undefined}
       className={`group relative block w-full cursor-pointer overflow-hidden border-0 bg-transparent p-0 text-left ${className}`}
     >
       <img
         src={photo.src}
         alt=""
         loading="lazy"
-        className={`w-full object-cover ${imgClassName} ${
+        className={`w-full object-cover transition-[filter,transform] duration-500 ${imgClassName} ${
           overlay ? 'scale-110 blur-[8px]' : ''
         }`}
       />
@@ -57,58 +59,79 @@ function PhotoButton({
 }
 
 function ProjectPreview({ project }: { project: Project }) {
+  const grid = useRef<HTMLDivElement>(null)
   const [lightbox, setLightbox] = useState<number | null>(null)
-  const preview = project.photos.slice(0, PREVIEW_COUNT)
-  const teaser = project.photos[PREVIEW_COUNT]
+  const [expanded, setExpanded] = useState(false)
+  const hasMore = project.photos.length > PREVIEW_COUNT
   const extraCount = project.photos.length - PREVIEW_COUNT
-  const extraLabel = extraCount > 0 ? extraPhotoLabel(extraCount) : ''
+  const extraLabel = hasMore ? extraPhotoLabel(extraCount) : ''
+  const photos =
+    expanded || !hasMore
+      ? project.photos
+      : project.photos.slice(0, PREVIEW_COUNT + 1)
+
+  useGSAP(
+    () => {
+      if (!expanded) return
+
+      const extras = gsap.utils.toArray<HTMLElement>('[data-extra]')
+      const mm = gsap.matchMedia()
+
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        if (!extras.length) return
+        gsap.from(extras, {
+          y: 24,
+          autoAlpha: 0,
+          duration: 0.7,
+          stagger: 0.07,
+        })
+      })
+
+      ScrollTrigger.refresh()
+      return () => mm.revert()
+    },
+    { scope: grid, dependencies: [expanded] },
+  )
 
   return (
     <div>
-      <div
+      <h3
         data-fade
-        className="mb-5 flex flex-col gap-2 sm:mb-7 sm:flex-row sm:items-start sm:justify-between sm:gap-4"
+        className="mb-5 font-serif text-[1.65rem] font-medium tracking-[-0.02em] sm:mb-7 sm:text-[1.85rem]"
       >
-        <h3 className="font-serif text-[1.65rem] font-medium tracking-[-0.02em] sm:text-[1.85rem]">
-          {project.name}
-        </h3>
-        <Link
-          to={projectPath(project.slug)}
-          className="inline-flex min-h-11 shrink-0 items-center text-[0.72rem] font-medium uppercase tracking-[0.18em] text-wood no-underline underline-offset-4 transition-colors hover:text-wood-deep hover:underline sm:mt-1 sm:min-h-0 sm:text-[0.78rem]"
-        >
-          {site.gallery.showMore}
-        </Link>
-      </div>
+        {project.name}
+      </h3>
 
       <div
+        ref={grid}
         className={`grid gap-2 sm:gap-3 lg:gap-4 ${
-          teaser ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'
+          hasMore ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'
         }`}
       >
-        {preview.map((photo, index) => (
-          <PhotoButton
-            key={photo.src}
-            photo={photo}
-            label={photo.alt}
-            onOpen={() => setLightbox(index)}
-            className={
-              teaser && index === 0 ? 'col-span-2 md:col-span-1' : undefined
-            }
-            imgClassName={
-              teaser && index === 0
-                ? 'aspect-[4/3] md:aspect-[4/5]'
-                : 'aspect-[4/5]'
-            }
-          />
-        ))}
-        {teaser ? (
-          <PhotoButton
-            photo={teaser}
-            overlay={extraLabel}
-            label={`${extraLabel}, ${project.name}`}
-            onOpen={() => setLightbox(PREVIEW_COUNT)}
-          />
-        ) : null}
+        {photos.map((photo, index) => {
+          const isTeaser = hasMore && !expanded && index === PREVIEW_COUNT
+
+          return (
+            <PhotoButton
+              key={photo.src}
+              photo={photo}
+              extra={expanded && index > PREVIEW_COUNT}
+              overlay={isTeaser ? extraLabel : undefined}
+              label={isTeaser ? `${extraLabel}, ${project.name}` : photo.alt}
+              onOpen={() =>
+                isTeaser ? setExpanded(true) : setLightbox(index)
+              }
+              className={
+                hasMore && index === 0 ? 'col-span-2 md:col-span-1' : undefined
+              }
+              imgClassName={
+                hasMore && index === 0
+                  ? 'aspect-[4/3] md:aspect-[4/5]'
+                  : 'aspect-[4/5]'
+              }
+            />
+          )
+        })}
       </div>
 
       {lightbox !== null ? (
@@ -172,12 +195,6 @@ export function Gallery() {
       className="border-b border-line py-16 sm:py-20 lg:py-24"
     >
       <div className="mx-auto max-w-[1120px] px-5">
-        <p
-          data-fade
-          className="mb-3 text-center text-[0.72rem] font-medium uppercase tracking-[0.22em] text-mute"
-        >
-          {site.gallery.kicker}
-        </p>
         <h2
           data-fade
           className="text-center font-serif text-[2rem] font-medium leading-tight tracking-[-0.02em] sm:text-[2.5rem]"
