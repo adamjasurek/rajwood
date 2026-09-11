@@ -84,43 +84,74 @@ function ownerSummary(values: Inquiry) {
   ].join('\n')
 }
 
-function createTransport() {
+function smtpAuth() {
   const user = process.env.SMTP_USER?.trim() || site.email
-  const pass = process.env.SMTP_PASS
+  const pass = process.env.SMTP_PASS?.replace(/^\uFEFF/, '').trim()
   if (!user || !pass) {
     throw new Error('Missing SMTP credentials')
   }
+  return { user, pass }
+}
 
-  const port = Number(process.env.SMTP_PORT || 465)
+function createTransport(port: number) {
+  const secure = port === 465
 
   return nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.seznam.cz',
+    host: process.env.SMTP_HOST?.trim() || 'smtp.seznam.cz',
     port,
-    secure: port === 465,
-    auth: { user, pass },
+    secure,
+    requireTLS: !secure,
+    auth: smtpAuth(),
+    connectionTimeout: 8000,
+    greetingTimeout: 8000,
+    socketTimeout: 8000,
+    tls: { minVersion: 'TLSv1.2' },
   })
+}
+
+async function sendBoth(values: Inquiry, port: number) {
+  const from = `"${site.name}" <${smtpAuth().user}>`
+  const to = site.email.trim()
+  const form = site.footer.form
+  const transport = createTransport(port)
+
+  try {
+    await Promise.all([
+      transport.sendMail({
+        from,
+        to,
+        replyTo: values.email,
+        subject: form.inquirySubject,
+        text: ownerSummary(values),
+      }),
+      transport.sendMail({
+        from,
+        to: values.email,
+        replyTo: to,
+        subject: form.customerSubject,
+        text: customerSummary(values),
+      }),
+    ])
+  } finally {
+    transport.close()
+  }
 }
 
 export async function processInquiry(input: unknown) {
   const values = parseInquiry(input)
-  const from = `"${site.name}" <${process.env.SMTP_USER?.trim() || site.email}>`
-  const to = site.email.trim()
-  const form = site.footer.form
-  const transport = createTransport()
+  const preferred = Number(process.env.SMTP_PORT || 465)
+  const ports = [...new Set([preferred, preferred === 587 ? 465 : 587])]
 
-  await transport.sendMail({
-    from,
-    to,
-    replyTo: values.email,
-    subject: form.inquirySubject,
-    text: ownerSummary(values),
-  })
+  let lastError: unknown
+  for (const port of ports) {
+    try {
+      await sendBoth(values, port)
+      return
+    } catch (error) {
+      lastError = error
+      console.error('[inquiry] smtp', port, error)
+    }
+  }
 
-  await transport.sendMail({
-    from,
-    to: values.email,
-    replyTo: to,
-    subject: form.customerSubject,
-    text: customerSummary(values),
-  })
+  throw lastError instanceof Error ? lastError : new Error('Send failed')
 }
