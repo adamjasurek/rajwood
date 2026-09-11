@@ -15,33 +15,42 @@ import {
 const MARK_RATIO = 614 / 703
 
 function MenuIcon({ open }: { open: boolean }) {
+  const line =
+    'block h-[1.6px] w-3.5 bg-current transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none'
+
   return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden="true">
-      {open ? (
-        <path
-          d="M6 6l12 12M18 6 6 18"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-        />
-      ) : (
-        <path
-          d="M5 7h14M5 12h14M5 17h14"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="square"
-        />
-      )}
-    </svg>
+    <span className="flex h-6 w-6 flex-col items-center justify-center gap-[3.4px]" aria-hidden="true">
+      <span className={`${line} ${open ? 'translate-y-[5px] rotate-45' : ''}`} />
+      <span className={`${line} ${open ? 'opacity-0' : ''}`} />
+      <span className={`${line} ${open ? '-translate-y-[5px] -rotate-45' : ''}`} />
+    </span>
   )
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
 export function Header() {
   const root = useRef<HTMLElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
+  const menuTl = useRef<gsap.core.Timeline | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [menuMounted, setMenuMounted] = useState(false)
   const menuId = useId()
+
+  const openMenu = () => {
+    setMenuMounted(true)
+    setMenuOpen(true)
+  }
+
+  const closeMenu = () => {
+    setMenuOpen(false)
+    if (prefersReducedMotion() || window.matchMedia('(min-width: 768px)').matches) {
+      setMenuMounted(false)
+    }
+  }
 
   useGSAP(
     () => {
@@ -150,28 +159,96 @@ export function Header() {
     { scope: root },
   )
 
+  useGSAP(
+    () => {
+      if (!menuMounted || !menuRef.current) return
+
+      const panel = menuRef.current
+      const links = gsap.utils.toArray<HTMLElement>('[data-menu-link]', panel)
+      const call = panel.querySelector<HTMLElement>('[data-menu-call]')
+
+      if (prefersReducedMotion()) {
+        gsap.set(panel, { clipPath: 'none', autoAlpha: 1 })
+        gsap.set(links, { autoAlpha: 1, y: 0 })
+        if (call) gsap.set(call, { autoAlpha: 1, y: 0 })
+        menuTl.current = null
+        return
+      }
+
+      const tl = gsap.timeline({
+        paused: true,
+        defaults: { ease: 'power3.out' },
+        onReverseComplete: () => setMenuMounted(false),
+      })
+
+      gsap.set(panel, { clipPath: 'inset(0% 0% 100% 0%)', autoAlpha: 1 })
+      gsap.set(links, { autoAlpha: 0, y: 28 })
+      if (call) gsap.set(call, { autoAlpha: 0, y: 16 })
+
+      tl.to(
+        panel,
+        { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.7, ease: 'power3.inOut' },
+        0,
+      )
+        .to(
+          links,
+          { autoAlpha: 1, y: 0, duration: 0.36, stagger: 0.045 },
+          0.2,
+        )
+
+      if (call) {
+        tl.to(call, { autoAlpha: 1, y: 0, duration: 0.34 }, 0.32)
+      }
+
+      menuTl.current = tl
+      tl.play()
+
+      return () => {
+        tl.kill()
+        menuTl.current = null
+      }
+    },
+    { dependencies: [menuMounted], scope: menuRef },
+  )
+
+  useGSAP(
+    () => {
+      if (!menuMounted) return
+      const tl = menuTl.current
+      if (!tl) return
+      if (menuOpen) tl.play()
+      else tl.reverse()
+    },
+    { dependencies: [menuOpen, menuMounted] },
+  )
+
   useEffect(() => {
-    if (!menuOpen) return
+    if (!menuMounted) return
 
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMenuOpen(false)
+      if (event.key === 'Escape') closeMenu()
     }
+
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [menuMounted])
+
+  useEffect(() => {
+    if (!menuOpen) return
 
     const html = document.documentElement
     const previous = html.style.overflow
     html.style.overflow = 'hidden'
     closeRef.current?.focus()
-    window.addEventListener('keydown', onKey)
 
     return () => {
       html.style.overflow = previous
-      window.removeEventListener('keydown', onKey)
     }
   }, [menuOpen])
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 768px)')
-    const close = () => setMenuOpen(false)
+    const close = () => closeMenu()
     mq.addEventListener('change', close)
     return () => mq.removeEventListener('change', close)
   }, [])
@@ -187,11 +264,11 @@ export function Header() {
 
         <div
           data-header-bar
-          className="relative mx-auto flex h-[5.5rem] max-w-[1120px] items-center justify-between gap-3 px-5 md:h-[6.5rem] md:gap-6"
+          className="relative mx-auto flex h-[4.5rem] max-w-[1120px] items-center justify-between gap-3 px-4 md:h-[6.5rem] md:gap-6 md:px-5"
         >
           <Logo />
 
-          <div className="flex items-center gap-2 md:gap-5">
+          <div className="flex items-center gap-1.5 md:gap-5">
             <nav
               className="header-nav hidden items-center gap-6 md:flex lg:gap-7"
               aria-label="Hlavní"
@@ -209,10 +286,9 @@ export function Header() {
 
             <a
               href={`tel:${site.phone.tel}`}
-              className="inline-flex h-11 min-w-11 items-center justify-center bg-paper px-3.5 text-[0.78rem] font-semibold tracking-[0.06em] text-[#2a1810] shadow-[0_8px_18px_rgba(8,4,2,0.28)] no-underline transition-colors duration-200 hover:bg-paper-2 focus-visible:outline-paper md:h-9 md:px-3.5 md:text-[0.8rem]"
+              className="hidden h-9 min-w-11 items-center justify-center bg-paper px-3.5 text-[0.8rem] font-semibold tracking-[0.06em] text-[#2a1810] shadow-[0_8px_18px_rgba(8,4,2,0.28)] no-underline transition-colors duration-200 hover:bg-paper-2 focus-visible:outline-paper md:inline-flex"
             >
-              <span className="md:hidden">Zavolat</span>
-              <span className="hidden md:inline">{site.phone.display}</span>
+              {site.phone.display}
             </a>
 
             <button
@@ -221,7 +297,7 @@ export function Header() {
               aria-label={menuOpen ? 'Zavřít menu' : 'Otevřít menu'}
               aria-expanded={menuOpen}
               aria-controls={menuId}
-              onClick={() => setMenuOpen((open) => !open)}
+              onClick={() => (menuOpen ? closeMenu() : openMenu())}
             >
               <MenuIcon open={menuOpen} />
             </button>
@@ -230,21 +306,25 @@ export function Header() {
       </header>
       <div
         aria-hidden="true"
-        className="pointer-events-none h-[calc(5.5rem+env(safe-area-inset-top))] shrink-0 md:h-[calc(6.5rem+env(safe-area-inset-top))]"
+        className="pointer-events-none h-[calc(4.5rem+env(safe-area-inset-top))] shrink-0 md:h-[calc(6.5rem+env(safe-area-inset-top))]"
       />
 
-      {menuOpen
+      {menuMounted
         ? createPortal(
             <div
+              ref={menuRef}
               id={menuId}
               role="dialog"
               aria-modal="true"
               aria-label="Menu"
-              className="fixed inset-0 z-[70] flex flex-col overflow-y-auto overscroll-contain bg-[#2a1810] md:hidden"
+              className={`fixed inset-0 z-[70] overflow-hidden bg-[#2a1810] md:hidden ${
+                menuOpen ? '' : 'pointer-events-none'
+              }`}
             >
               <WoodBackdrop />
-              <div className="relative flex h-[calc(5.5rem+env(safe-area-inset-top))] items-center justify-between px-5 pt-[env(safe-area-inset-top)]">
-                <div onClick={() => setMenuOpen(false)}>
+              <div className="relative flex h-full flex-col overflow-y-auto overscroll-contain">
+              <div className="relative flex h-[calc(4.5rem+env(safe-area-inset-top))] items-center justify-between px-4 pt-[env(safe-area-inset-top)] md:px-5">
+                <div onClick={closeMenu}>
                   <Logo />
                 </div>
                 <button
@@ -252,21 +332,22 @@ export function Header() {
                   type="button"
                   className="inline-flex h-11 w-11 cursor-pointer items-center justify-center text-paper"
                   aria-label="Zavřít menu"
-                  onClick={() => setMenuOpen(false)}
+                  onClick={closeMenu}
                 >
                   <MenuIcon open />
                 </button>
               </div>
               <nav
-                className="relative flex flex-1 flex-col justify-center gap-1 px-8 pb-8"
+                className="relative flex flex-1 flex-col justify-center gap-0.5 px-6 pb-6 min-[400px]:px-8"
                 aria-label="Hlavní"
               >
                 {site.nav.map((item) => (
                   <HashLink
                     key={item.href}
                     to={item.href}
-                    onClick={() => setMenuOpen(false)}
-                    className="block w-full py-3 font-serif text-[2.35rem] font-medium leading-tight tracking-[-0.03em] text-paper no-underline"
+                    data-menu-link
+                    onClick={closeMenu}
+                    className="flex min-h-12 w-full items-center py-2 font-serif text-[clamp(1.85rem,8vw,2.35rem)] font-medium leading-tight tracking-[-0.03em] text-paper no-underline"
                   >
                     {item.label}
                   </HashLink>
@@ -274,10 +355,12 @@ export function Header() {
               </nav>
               <a
                 href={`tel:${site.phone.tel}`}
-                className="relative mx-5 mb-[max(1.25rem,env(safe-area-inset-bottom))] inline-flex h-12 items-center justify-center bg-paper text-[0.95rem] font-medium tracking-wide text-[#2a1810] no-underline"
+                data-menu-call
+                className="relative mx-4 mb-[max(1.25rem,env(safe-area-inset-bottom))] inline-flex h-12 items-center justify-center bg-paper text-[0.95rem] font-medium tracking-wide text-[#2a1810] no-underline min-[400px]:mx-5"
               >
                 Zavolat {site.phone.display}
               </a>
+              </div>
             </div>,
             document.body,
           )

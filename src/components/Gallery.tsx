@@ -41,13 +41,14 @@ function PhotoButton({
         src={photo.src}
         alt=""
         loading="lazy"
+        decoding="async"
         className={`w-full object-cover transition-[filter,transform] duration-500 ${imgClassName} ${
           overlay ? 'scale-110 blur-[8px]' : ''
         }`}
       />
       {overlay ? (
         <span className="absolute inset-0 flex items-center justify-center bg-[rgba(18,12,8,0.48)]">
-          <span className="font-serif text-[1.15rem] font-medium tracking-[-0.02em] text-paper sm:text-[1.45rem]">
+        <span className="font-serif text-[1.05rem] font-medium tracking-[-0.02em] text-paper sm:text-[1.45rem]">
             {overlay}
           </span>
         </span>
@@ -97,7 +98,7 @@ function ProjectPreview({ project }: { project: Project }) {
     <div>
       <h3
         data-fade
-        className="mb-5 font-serif text-[1.65rem] font-medium tracking-[-0.02em] sm:mb-7 sm:text-[1.85rem]"
+        className="mb-4 font-serif text-[1.4rem] font-medium leading-snug tracking-[-0.02em] sm:mb-7 sm:text-[1.85rem]"
       >
         {project.name}
       </h3>
@@ -192,17 +193,17 @@ export function Gallery() {
     <section
       ref={root}
       id={site.gallery.id}
-      className="border-b border-line py-16 sm:py-20 lg:py-24"
+      className="border-b border-line py-12 sm:py-20 lg:py-24"
     >
-      <div className="mx-auto max-w-[1120px] px-5">
+      <div className="mx-auto max-w-[1120px] px-4 sm:px-5">
         <h2
           data-fade
-          className="text-center font-serif text-[2rem] font-medium leading-tight tracking-[-0.02em] sm:text-[2.5rem]"
+          className="text-balance text-center font-serif text-[1.85rem] font-medium leading-tight tracking-[-0.02em] sm:text-[2.5rem]"
         >
           {site.gallery.title}
         </h2>
 
-        <div className="mt-10 flex flex-col gap-12 sm:mt-16 sm:gap-20">
+        <div className="mt-8 flex flex-col gap-10 sm:mt-16 sm:gap-20">
           {site.gallery.projects.map((project) => (
             <ProjectPreview key={project.slug} project={project} />
           ))}

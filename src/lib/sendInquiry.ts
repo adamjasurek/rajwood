@@ -32,6 +32,7 @@ export async function sendInquiry(values: Inquiry) {
         email: values.email || to,
         telefon: values.phone,
         zprava: values.message || '—',
+        souhlas_gdpr: 'ano',
       }),
     },
   )

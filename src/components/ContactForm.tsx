@@ -1,23 +1,25 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { site } from '../content/site'
 import { sendInquiry } from '../lib/sendInquiry'
 import { WoodBackdrop } from './WoodBackdrop'
 
 const fieldClass =
-  'mt-2 w-full border border-line bg-paper px-4 py-3 text-[1rem] text-ink placeholder:text-mute/70'
+  'mt-2 min-h-12 w-full border border-line bg-paper px-3.5 py-3 text-[16px] text-ink placeholder:text-mute/70 sm:px-4'
 
 const errorClass = 'border-[#8a3428]'
 
 type FieldKey = 'firstName' | 'lastName' | 'email' | 'phone' | 'message'
-type FormValues = Record<FieldKey, string>
-type FormErrors = Partial<Record<FieldKey | 'send', string>>
+type FormValues = Record<FieldKey, string> & { consent: boolean }
+type FormErrors = Partial<Record<FieldKey | 'consent' | 'send', string>>
 
-const fieldOrder: FieldKey[] = [
+const fieldOrder: Array<FieldKey | 'consent'> = [
   'firstName',
   'lastName',
   'email',
   'phone',
   'message',
+  'consent',
 ]
 
 function readValues(form: HTMLFormElement): FormValues {
@@ -28,6 +30,7 @@ function readValues(form: HTMLFormElement): FormValues {
     email: String(data.get('email') ?? '').trim(),
     phone: String(data.get('phone') ?? '').trim(),
     message: String(data.get('message') ?? '').trim(),
+    consent: data.get('consent') === 'on',
   }
 }
 
@@ -50,6 +53,7 @@ function validate(values: FormValues): FormErrors {
   if (values.email && !isValidEmail(values.email)) errors.email = copy.email
   if (!values.phone) errors.phone = copy.phone
   else if (!isValidPhone(values.phone)) errors.phone = copy.phoneInvalid
+  if (!values.consent) errors.consent = copy.consent
 
   return errors
 }
@@ -139,7 +143,11 @@ export function ContactForm() {
         if (!attempted) return
         setErrors(validate(readValues(event.currentTarget)))
       }}
-      className="mx-auto mt-10 grid max-w-[36rem] gap-4 text-left"
+      onChange={(event) => {
+        if (!attempted) return
+        setErrors(validate(readValues(event.currentTarget)))
+      }}
+      className="mx-auto mt-8 grid max-w-[36rem] gap-4 text-left sm:mt-10"
       aria-busy={sending}
     >
       <div className="grid gap-4 sm:grid-cols-2">
@@ -152,6 +160,8 @@ export function ContactForm() {
             name="firstName"
             type="text"
             autoComplete="given-name"
+            autoCapitalize="words"
+            autoCorrect="off"
             required
             aria-invalid={Boolean(errors.firstName)}
             aria-describedby={errors.firstName ? 'contact-firstName-error' : undefined}
@@ -167,6 +177,8 @@ export function ContactForm() {
             name="lastName"
             type="text"
             autoComplete="family-name"
+            autoCapitalize="words"
+            autoCorrect="off"
             required
             aria-invalid={Boolean(errors.lastName)}
             aria-describedby={errors.lastName ? 'contact-lastName-error' : undefined}
@@ -183,6 +195,9 @@ export function ContactForm() {
           name="email"
           type="email"
           autoComplete="email"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           aria-invalid={Boolean(errors.email)}
           aria-describedby={errors.email ? 'contact-email-error' : undefined}
           className={`${fieldClass} ${errors.email ? errorClass : ''}`}
@@ -217,6 +232,38 @@ export function ContactForm() {
           className={`${fieldClass} min-h-[8.5rem] resize-y ${errors.message ? errorClass : ''}`}
         />
       </Field>
+      <div>
+        <div className="flex items-start gap-3 py-1">
+          <input
+            id="contact-consent"
+            name="consent"
+            type="checkbox"
+            required
+            aria-invalid={Boolean(errors.consent)}
+            aria-describedby={errors.consent ? 'contact-consent-error' : undefined}
+            className="mt-0.5 h-5 w-5 shrink-0 accent-[#4a2d1c]"
+          />
+          <div className="min-w-0 text-[0.9rem] leading-relaxed text-ink">
+            <label htmlFor="contact-consent">{copy.consent}{' '}</label>
+            <Link
+              to={site.legal.privacy.path}
+              className="underline decoration-line underline-offset-2 hover:text-mute"
+            >
+              {copy.consentLink}
+            </Link>
+            .
+          </div>
+        </div>
+        {errors.consent ? (
+          <p
+            id="contact-consent-error"
+            role="alert"
+            className="mt-1.5 text-[0.82rem] text-[#8a3428]"
+          >
+            {errors.consent}
+          </p>
+        ) : null}
+      </div>
       <button
         type="submit"
         disabled={sending}

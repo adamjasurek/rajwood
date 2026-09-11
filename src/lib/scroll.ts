@@ -2,7 +2,7 @@ type ScrollKind = 'auto' | 'smooth'
 
 export const HEADER_COMPACT = 56
 export const HEADER_EXPANDED_DESKTOP = 104
-export const HEADER_EXPANDED_MOBILE = 88
+export const HEADER_EXPANDED_MOBILE = 72
 
 export function safeTop() {
   const raw = getComputedStyle(document.documentElement).getPropertyValue('--safe-top')

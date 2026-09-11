@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { ContactForm } from './ContactForm'
 import { site } from '../content/site'
 import { gsap, ScrollTrigger, useGSAP } from '../lib/gsap'
@@ -27,7 +27,9 @@ function FacebookIcon() {
 
 export function Footer() {
   const root = useRef<HTMLElement>(null)
+  const location = useLocation()
   const year = new Date().getFullYear()
+  const showContact = location.pathname === '/'
 
   useGSAP(
     () => {
@@ -51,7 +53,7 @@ export function Footer() {
 
       return () => mm.revert()
     },
-    { scope: root },
+    { scope: root, dependencies: [showContact], revertOnUpdate: true },
   )
 
   const socials = [
@@ -62,76 +64,85 @@ export function Footer() {
   return (
     <footer
       ref={root}
-      id={site.footer.id}
-      className="pt-16 sm:pt-20 lg:pt-24"
+      id={showContact ? site.footer.id : undefined}
+      className={showContact ? 'pt-12 sm:pt-20 lg:pt-24' : 'pt-8 sm:pt-10'}
     >
-      <div className="mx-auto max-w-[1120px] px-5">
-        <h2
-          data-fade
-          className="mx-auto max-w-[14ch] text-center font-serif text-[2.15rem] font-medium leading-tight tracking-[-0.02em] sm:text-[3rem]"
-        >
-          {site.footer.title}
-        </h2>
+      <div className="mx-auto max-w-[1120px] px-4 sm:px-5">
+        {showContact ? (
+          <>
+            <h2
+              data-fade
+              className="mx-auto max-w-[14ch] text-balance text-center font-serif text-[1.85rem] font-medium leading-tight tracking-[-0.02em] sm:text-[3rem]"
+            >
+              {site.footer.title}
+            </h2>
 
-        <div data-fade>
-          <ContactForm />
-        </div>
-
-        <p
-          data-fade
-          className="mx-auto mt-12 flex max-w-[36rem] items-center gap-4 text-[0.72rem] font-medium uppercase tracking-[0.22em] text-mute"
-        >
-          <span className="h-px flex-1 bg-line" />
-          {site.footer.or}
-          <span className="h-px flex-1 bg-line" />
-        </p>
-
-        <article
-          data-fade
-          className="mx-auto mt-10 w-full max-w-[22rem] border border-line px-8 py-9 text-left sm:px-10 sm:py-10"
-        >
-          <p className="font-serif text-[1.85rem] font-medium leading-tight tracking-[-0.02em] sm:text-[2.05rem]">
-            {site.owner}
-          </p>
-          <div aria-hidden className="mt-5 h-px w-12 bg-wood" />
-
-          <dl className="mt-6 space-y-4">
-            {site.email ? (
-              <div>
-                <dt className="text-[0.72rem] tracking-[0.16em] text-mute">
-                  mail
-                </dt>
-                <dd className="mt-1">
-                  <a
-                    href={`mailto:${site.email}`}
-                    className="text-[1.05rem] text-ink no-underline hover:underline"
-                  >
-                    {site.email}
-                  </a>
-                </dd>
-              </div>
-            ) : null}
-            <div>
-              <dt className="text-[0.72rem] tracking-[0.16em] text-mute">
-                tel
-              </dt>
-              <dd className="mt-1">
-                <a
-                  href={`tel:${site.phone.tel}`}
-                  className="text-[1.05rem] text-ink no-underline hover:underline"
-                >
-                  {site.phone.display}
-                </a>
-              </dd>
+            <div data-fade>
+              <ContactForm />
             </div>
-          </dl>
 
-          <p className="mt-7 text-[0.9rem] text-mute">{site.footer.hours}</p>
-        </article>
+            <p
+              data-fade
+              className="mx-auto mt-10 flex max-w-[36rem] items-center gap-3 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-mute sm:mt-12 sm:gap-4 sm:text-[0.72rem] sm:tracking-[0.22em]"
+            >
+              <span className="h-px flex-1 bg-line" />
+              {site.footer.or}
+              <span className="h-px flex-1 bg-line" />
+            </p>
 
-        <div data-fade className="mt-12 border-t border-line pt-8 sm:mt-14">
+            <article
+              data-fade
+              className="mx-auto mt-8 w-full max-w-[22rem] border border-line px-6 py-8 text-left sm:mt-10 sm:px-10 sm:py-10"
+            >
+              <p className="font-serif text-[1.65rem] font-medium leading-tight tracking-[-0.02em] sm:text-[2.05rem]">
+                {site.owner}
+              </p>
+              <div aria-hidden className="mt-5 h-px w-12 bg-wood" />
+
+              <dl className="mt-6 space-y-4">
+                {site.email ? (
+                  <div>
+                    <dt className="text-[0.72rem] tracking-[0.16em] text-mute">
+                      mail
+                    </dt>
+                    <dd className="mt-1">
+                      <a
+                        href={`mailto:${site.email}`}
+                        className="inline-flex min-h-11 items-center text-[1.05rem] text-ink no-underline hover:underline"
+                      >
+                        {site.email}
+                      </a>
+                    </dd>
+                  </div>
+                ) : null}
+                <div>
+                  <dt className="text-[0.72rem] tracking-[0.16em] text-mute">
+                    tel
+                  </dt>
+                  <dd className="mt-1">
+                    <a
+                      href={`tel:${site.phone.tel}`}
+                      className="inline-flex min-h-11 items-center text-[1.05rem] text-ink no-underline hover:underline"
+                    >
+                      {site.phone.display}
+                    </a>
+                  </dd>
+                </div>
+              </dl>
+
+              <p className="mt-7 text-[0.9rem] text-mute">{site.footer.hours}</p>
+            </article>
+          </>
+        ) : null}
+
+        <div
+          data-fade
+          className={
+            showContact ? 'mt-12 border-t border-line pt-8 sm:mt-14' : ''
+          }
+        >
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-            <div className="flex items-center gap-4">
+            <div className="flex min-w-0 items-center gap-4">
               <Link
                 to="/"
                 aria-label={site.name}
@@ -144,7 +155,7 @@ export function Footer() {
                   className="h-14 w-auto sm:h-16"
                 />
               </Link>
-              <div className="text-[0.95rem] text-mute">
+              <div className="min-w-0 text-[0.95rem] text-mute">
                 <p className="text-ink">{site.name}</p>
                 <p className="mt-1">{site.address}</p>
               </div>
@@ -177,22 +188,47 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 border-t border-line pt-5 pb-[max(5.5rem,calc(env(safe-area-inset-bottom)+4.5rem))] md:mt-10 md:pb-5">
-          <div className="flex flex-col items-center gap-2 text-center text-[0.82rem] leading-snug text-mute sm:grid sm:grid-cols-3 sm:items-center sm:gap-6 sm:text-[0.9rem]">
-            <p className="sm:justify-self-start sm:text-left">IČO: {site.ico}</p>
-            <p className="sm:justify-self-center">
+        <div className="mt-8 border-t border-line pt-4 pb-[max(5.75rem,calc(env(safe-area-inset-bottom)+4.75rem))] md:mt-10 md:pb-5">
+          <div className="flex flex-col items-center gap-1 text-center text-[0.82rem] leading-snug text-mute sm:grid sm:grid-cols-3 sm:items-center sm:gap-6 sm:text-[0.9rem]">
+            <p className="sm:justify-self-start sm:text-left">
               {site.owner} © {year}
+              <span className="mt-1 block sm:mt-0 sm:ml-3 sm:inline">
+                IČO: {site.ico}
+              </span>
             </p>
-            <p className="sm:justify-self-end sm:text-right">
+            <p className="sm:justify-self-center">
               <a
                 href={site.creditHref}
                 target="_blank"
                 rel="noreferrer"
-                className="text-mute no-underline hover:underline"
+                className="inline-flex min-h-11 items-center text-mute no-underline hover:underline"
               >
                 {site.credit}
               </a>
             </p>
+            <nav
+              aria-label="Právní informace"
+              className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0 sm:justify-self-end sm:justify-end sm:gap-x-5"
+            >
+              <Link
+                to={site.legal.terms.path}
+                aria-current={location.pathname === site.legal.terms.path ? 'page' : undefined}
+                className={`inline-flex min-h-11 items-center px-1 no-underline hover:underline ${
+                  location.pathname === site.legal.terms.path ? 'text-ink' : 'text-mute'
+                }`}
+              >
+                {site.legal.terms.label}
+              </Link>
+              <Link
+                to={site.legal.privacy.path}
+                aria-current={location.pathname === site.legal.privacy.path ? 'page' : undefined}
+                className={`inline-flex min-h-11 items-center px-1 no-underline hover:underline ${
+                  location.pathname === site.legal.privacy.path ? 'text-ink' : 'text-mute'
+                }`}
+              >
+                {site.legal.privacy.label}
+              </Link>
+            </nav>
           </div>
         </div>
       </div>

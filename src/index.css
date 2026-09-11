@@ -18,6 +18,7 @@ html {
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   scroll-behavior: auto;
   scroll-padding-top: calc(3.5rem + var(--safe-top));
+  overflow-x: clip;
   overflow-anchor: none;
   scrollbar-gutter: stable;
   -webkit-text-size-adjust: 100%;
@@ -77,7 +78,7 @@ textarea:focus-visible {
 .header-wood__photo {
   position: absolute;
   inset: 0;
-  background-image: url('/images/header-wood.jpg');
+  background-image: url('/images/header-wood.webp');
   background-position: 50% 62%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -141,6 +142,17 @@ textarea:focus-visible {
 .header-nav__link:hover::after,
 .header-nav__link:focus-visible::after {
   transform: scaleX(1);
+}
+
+@media (max-width: 767px) {
+  html {
+    scrollbar-gutter: auto;
+    scroll-padding-bottom: calc(4.5rem + var(--safe-bottom));
+  }
+
+  [data-wood-backdrop] > svg {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

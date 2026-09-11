@@ -23,18 +23,18 @@ export function Logo({ className = '' }: LogoProps) {
       onClick={() => {
         if (location.pathname === '/') scrollToTop('smooth')
       }}
-      className={`relative flex h-16 w-[7.25rem] flex-col items-center overflow-hidden sm:h-[4.75rem] sm:w-[8.75rem] ${className}`}
+      className={`relative flex h-14 w-[6.5rem] flex-col items-center overflow-hidden md:h-[4.75rem] md:w-[8.75rem] ${className}`}
     >
       <img
         data-logo-mark
         src={failedMark ? site.logo.fallbackSrc : site.logo.markSrc}
         alt={site.name}
-        className="relative z-[1] h-11 w-auto max-w-none shrink-0 object-contain sm:h-14"
+        className="relative z-[1] h-10 w-auto max-w-none shrink-0 object-contain md:h-14"
         onError={() => setFailedMark(true)}
       />
       <span
         data-logo-word-clip
-        className="relative h-[1.125rem] w-full shrink-0 overflow-hidden sm:h-5"
+        className="relative h-4 w-full shrink-0 overflow-hidden md:h-5"
       >
         <img
           data-logo-word

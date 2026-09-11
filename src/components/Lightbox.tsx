@@ -57,7 +57,7 @@ export function Lightbox({ photos, startIndex, onClose }: LightboxProps) {
         type="button"
         onClick={onClose}
         aria-label={copy.close}
-        className="absolute right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-10 flex h-12 w-12 cursor-pointer items-center justify-center text-paper transition-opacity hover:opacity-70 focus-visible:outline-paper sm:right-6 sm:top-6 sm:h-11 sm:w-11"
+        className="absolute right-2 top-[max(0.5rem,env(safe-area-inset-top))] z-10 flex h-12 w-12 cursor-pointer items-center justify-center text-paper transition-opacity hover:opacity-70 focus-visible:outline-paper sm:right-6 sm:top-6 sm:h-11 sm:w-11"
       >
         <svg viewBox="0 0 24 24" className="h-7 w-7" aria-hidden="true">
           <path
@@ -113,7 +113,7 @@ export function Lightbox({ photos, startIndex, onClose }: LightboxProps) {
       ) : null}
 
       <figure
-        className="flex max-h-[100svh] max-w-[100vw] flex-col items-center px-4 py-20 sm:px-20 sm:py-16"
+        className="flex max-h-[100svh] max-w-[100vw] flex-col items-center px-3 pb-[max(2.5rem,calc(env(safe-area-inset-bottom)+1.25rem))] pt-16 sm:px-20 sm:py-16"
         onClick={(event) => event.stopPropagation()}
         onTouchStart={(event) => {
           touchX.current = event.changedTouches[0]?.clientX ?? null
@@ -131,9 +131,9 @@ export function Lightbox({ photos, startIndex, onClose }: LightboxProps) {
         <img
           src={photo.src}
           alt={photo.alt}
-          className="max-h-[min(78svh,900px)] w-auto max-w-full object-contain"
+          className="max-h-[min(72svh,900px)] w-auto max-w-full object-contain"
         />
-        <figcaption className="mt-4 text-center text-[0.78rem] tracking-[0.16em] text-paper/70">
+        <figcaption className="mt-3 text-center text-[0.78rem] tracking-[0.16em] text-paper/70">
           {index + 1} / {photos.length}
         </figcaption>
       </figure>

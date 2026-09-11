@@ -181,13 +181,13 @@ export function Services() {
       id={site.services.id}
       className="border-b border-line"
     >
-      <div className="mx-auto grid max-w-[1120px] px-5 pb-16 pt-16 sm:pb-20 sm:pt-20 md:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)] md:gap-x-10 md:gap-y-12 lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-x-14 lg:pb-24 lg:pt-24 xl:gap-x-16">
+      <div className="mx-auto grid max-w-[1120px] px-4 pb-14 pt-12 sm:px-5 sm:pb-20 sm:pt-20 md:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)] md:gap-x-10 md:gap-y-12 lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-x-14 lg:pb-24 lg:pt-24 xl:gap-x-16">
         <header className="md:col-span-2 md:row-start-1">
           <h2
             data-fade
             className="text-center font-serif font-medium leading-[1.08] tracking-[-0.03em]"
           >
-            <span className="block text-[2.35rem] sm:text-[3.15rem] lg:text-[3.5rem]">
+            <span className="block text-[clamp(1.95rem,8vw,2.35rem)] sm:text-[3.15rem] lg:text-[3.5rem]">
               {site.services.title}
             </span>
             <span className="relative mt-1 inline-block pb-[0.22em] font-serif text-[1.85rem] font-normal italic tracking-[-0.02em] text-mute sm:text-[2.35rem]">
@@ -214,22 +214,23 @@ export function Services() {
         </header>
 
         <div className="md:contents">
-          <figure className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-[1] mt-8 isolate bg-paper shadow-[0_16px_28px_rgba(26,22,18,0.12)] md:relative md:top-auto md:z-auto md:col-start-1 md:row-start-2 md:mt-0 md:h-full md:shadow-none">
+          <figure className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-[1] mt-6 isolate bg-paper shadow-[0_16px_28px_rgba(26,22,18,0.12)] md:relative md:top-auto md:z-auto md:col-start-1 md:row-start-2 md:mt-0 md:h-full md:shadow-none">
           <div
             data-service-photo
-            className="relative aspect-[4/3] overflow-hidden md:absolute md:inset-0 md:aspect-auto md:h-full"
+            className="relative aspect-[16/10] overflow-hidden md:absolute md:inset-0 md:aspect-auto md:h-full"
           >
             {photos.map((image, index) => (
               <div
                 key={image.src}
                 data-service-slide
                 className="absolute inset-0 overflow-hidden"
-                style={{ zIndex: index }}
+                style={{ zIndex: index, opacity: index === 0 ? 1 : 0 }}
               >
                 <img
                   data-service-img
                   src={image.src}
                   alt={image.alt}
+                  decoding="async"
                   className="absolute inset-0 h-full w-full object-cover object-[center_42%]"
                 />
               </div>
@@ -248,11 +249,12 @@ export function Services() {
               className="pointer-events-none absolute bottom-4 right-4 z-[3] h-8 w-8 border-b border-r border-paper/80"
             />
             <figcaption className="pointer-events-none absolute inset-x-4 bottom-4 z-[3] h-[2.6em]">
-              {photos.map((image) => (
+              {photos.map((image, index) => (
                 <span
                   key={image.caption}
                   data-service-caption
-                  className="absolute inset-x-0 bottom-0 text-[0.72rem] font-medium uppercase leading-snug tracking-[0.18em] text-paper [text-shadow:0_1px_8px_rgba(18,12,8,0.55)]"
+                  className="absolute inset-x-0 bottom-0 text-[0.68rem] font-medium uppercase leading-snug tracking-[0.12em] text-paper [text-shadow:0_1px_8px_rgba(18,12,8,0.55)] sm:text-[0.72rem] sm:tracking-[0.18em]"
+                  style={{ opacity: index === 0 ? 1 : 0 }}
                 >
                   {image.caption}
                 </span>
@@ -263,7 +265,7 @@ export function Services() {
 
         <div
           data-service-list
-          className="relative mt-8 border-b border-line pb-10 md:col-start-2 md:row-start-2 md:mt-0 md:max-w-[40rem] md:pb-0"
+          className="relative mt-6 border-b border-line pb-16 md:col-start-2 md:row-start-2 md:mt-0 md:max-w-[40rem] md:pb-0"
         >
           <span
             data-service-mark
@@ -274,10 +276,10 @@ export function Services() {
             <article
               key={item.name}
               data-service
-              className="relative py-6 pl-5 before:pointer-events-none before:absolute before:inset-x-0 before:left-[2px] before:top-0 before:h-px before:bg-line sm:py-7 sm:pl-6"
+              className="relative py-5 pl-5 before:pointer-events-none before:absolute before:inset-x-0 before:left-[2px] before:top-0 before:h-px before:bg-line sm:py-7 sm:pl-6"
             >
               <div data-service-shift className="will-change-transform">
-                <h3 className="font-serif text-[1.85rem] font-medium tracking-[-0.03em] sm:text-[2.15rem]">
+                <h3 className="font-serif text-[1.65rem] font-medium tracking-[-0.03em] sm:text-[2.15rem]">
                   {item.name}
                 </h3>
                 <p className="mt-2 max-w-[38ch] text-[1.02rem] leading-relaxed text-mute">

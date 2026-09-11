@@ -1,8 +1,9 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Footer } from './Footer'
 import { Header } from './Header'
 import { StickyCall } from './StickyCall'
+import { site } from '../content/site'
 import { ScrollTrigger, useGSAP } from '../lib/gsap'
 import { unlockBootScroll, waitForLayout, waitFrames } from '../lib/bootScroll'
 import { scrollToHash, scrollToTop } from '../lib/scroll'
@@ -20,6 +21,15 @@ export function Layout() {
   const location = useLocation()
   const prevPathname = useRef<string | null>(null)
   const isHome = location.pathname === '/'
+
+  useEffect(() => {
+    const legal = Object.values(site.legal).find(
+      (item) => item.path === location.pathname,
+    )
+    document.title = legal
+      ? `${legal.title} — ${site.name}`
+      : site.documentTitle
+  }, [location.pathname])
 
   useLayoutEffect(() => {
     const pathChanged = prevPathname.current !== location.pathname
