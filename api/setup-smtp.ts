@@ -1,10 +1,5 @@
-import { getMethod, jsonReply, readJsonBody } from '../server/http'
 import { processSmtpSetup } from '../server/setupSmtp'
-
-export const config = {
-  runtime: 'nodejs',
-  maxDuration: 20,
-}
+import { getMethod, jsonReply, readJsonBody } from '../server/http'
 
 export default async function handler(req: unknown, res?: unknown) {
   const method = getMethod(req)

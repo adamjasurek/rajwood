@@ -1,5 +1,8 @@
-import nodemailer from 'nodemailer'
+import { createRequire } from 'node:module'
 import { site } from '../src/content/site'
+
+const require = createRequire(import.meta.url)
+const nodemailer = require('nodemailer') as typeof import('nodemailer')
 
 export type Inquiry = {
   firstName: string
