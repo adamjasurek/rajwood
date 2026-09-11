@@ -9,7 +9,6 @@ export const site = {
   credit: 'Vytvořil Adam Jašúrek',
   creditHref: 'https://adamjasurek.cz',
   email: 'lukas@rajwood.com',
-  warrantyYears: 'X',
   logo: {
     src: '/images/logo.webp',
     headerSrc: '/images/svetle-logo.webp',
@@ -93,10 +92,6 @@ export const site = {
       {
         name: 'Poctivé řemeslo',
         text: 'Pořádné spoje, pořádné dřevo, pořádná montáž.',
-      },
-      {
-        name: 'Záruka',
-        text: 'Na konstrukci dáváme záruku. Když něco není v pořádku, řešíme to.',
       },
     ],
   },

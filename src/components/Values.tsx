@@ -134,13 +134,11 @@ export function Values() {
           className="mx-auto mt-6 h-px w-24 origin-center bg-wood sm:mt-8"
         />
 
-        <ul className="mt-9 grid gap-x-8 gap-y-8 sm:mt-14 sm:grid-cols-2 sm:gap-y-10 lg:grid-cols-4">
+        <ul className="mt-9 grid gap-x-8 gap-y-8 sm:mt-14 sm:grid-cols-2 sm:gap-y-10 lg:grid-cols-3">
           {site.values.items.map((item) => (
             <li key={item.name} data-value>
               <h3 className="font-serif text-[1.35rem] font-medium tracking-[-0.02em] sm:text-[1.45rem]">
-                {item.name === 'Záruka'
-                  ? `Záruka ${site.warrantyYears} let`
-                  : item.name}
+                {item.name}
               </h3>
               <p className="mt-3 text-[1.02rem] leading-relaxed text-mute">
                 {item.text}
