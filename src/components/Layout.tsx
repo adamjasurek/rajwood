@@ -26,9 +26,15 @@ export function Layout() {
     const legal = Object.values(site.legal).find(
       (item) => item.path === location.pathname,
     )
-    document.title = legal
-      ? `${legal.title} — ${site.name}`
-      : site.documentTitle
+    if (legal) {
+      document.title = `${legal.title} — ${site.name}`
+      return
+    }
+    if (location.pathname === site.gallery.path) {
+      document.title = `${site.gallery.pageTitle} — ${site.name}`
+      return
+    }
+    document.title = site.documentTitle
   }, [location.pathname])
 
   useLayoutEffect(() => {

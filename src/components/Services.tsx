@@ -1,9 +1,12 @@
 import { useRef } from 'react'
 import { site } from '../content/site'
 import { gsap, ScrollTrigger, useGSAP } from '../lib/gsap'
-import { HEADER_COMPACT, safeTop } from '../lib/scroll'
 
 const photos = site.services.images
+
+function isDesktop() {
+  return window.matchMedia('(min-width: 768px)').matches
+}
 
 export function Services() {
   const root = useRef<HTMLElement>(null)
@@ -141,24 +144,13 @@ export function Services() {
                   : gsap.utils.clamp(0, 1, (progress - range.start) / span)
               shiftTo[i]?.(amount * 10)
             })
-            if (slides.length > 1 && photo) fadeTo(slideAt(progress))
-          }
-
-          const scanLine = () => {
-            if (window.matchMedia('(min-width: 768px)').matches) return null
-            return HEADER_COMPACT + safeTop() + (photo?.offsetHeight ?? 0)
+            if (slides.length > 1 && photo && isDesktop()) fadeTo(slideAt(progress))
           }
 
           ScrollTrigger.create({
             trigger: list,
-            start: () => {
-              const line = scanLine()
-              return line == null ? 'top 55%' : `top ${line}px`
-            },
-            end: () => {
-              const line = scanLine()
-              return line == null ? 'bottom 55%' : `bottom ${line}px`
-            },
+            start: 'top 55%',
+            end: 'bottom 55%',
             invalidateOnRefresh: true,
             onRefresh: (self) => {
               measure()
@@ -214,7 +206,7 @@ export function Services() {
         </header>
 
         <div className="md:contents">
-          <figure className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-[1] mt-6 isolate bg-paper shadow-[0_16px_28px_rgba(26,22,18,0.12)] md:relative md:top-auto md:z-auto md:col-start-1 md:row-start-2 md:mt-0 md:h-full md:shadow-none">
+          <figure className="mt-6 hidden isolate md:relative md:col-start-1 md:row-start-2 md:mt-0 md:block md:h-full">
           <div
             data-service-photo
             className="relative aspect-[16/10] overflow-hidden md:absolute md:inset-0 md:aspect-auto md:h-full"
@@ -272,22 +264,46 @@ export function Services() {
             aria-hidden
             className="pointer-events-none absolute bottom-0 left-0 top-0 z-[2] w-[2px] origin-top bg-wood"
           />
-          {site.services.items.map((item) => (
-            <article
-              key={item.name}
-              data-service
-              className="relative py-5 pl-5 before:pointer-events-none before:absolute before:inset-x-0 before:left-[2px] before:top-0 before:h-px before:bg-line sm:py-7 sm:pl-6"
-            >
-              <div data-service-shift className="will-change-transform">
-                <h3 className="font-serif text-[1.65rem] font-medium tracking-[-0.03em] sm:text-[2.15rem]">
-                  {item.name}
-                </h3>
-                <p className="mt-2 max-w-[38ch] text-[1.02rem] leading-relaxed text-mute">
-                  {item.text}
-                </p>
-              </div>
-            </article>
-          ))}
+          {site.services.items.map((item, index) => {
+            const image = photos[index]
+            return (
+              <article
+                key={item.name}
+                data-service
+                className="relative py-6 pl-5 before:pointer-events-none before:absolute before:inset-x-0 before:left-[2px] before:top-0 before:h-px before:bg-line sm:py-7 sm:pl-6"
+              >
+                <div data-service-shift className="will-change-transform">
+                  {image ? (
+                    <figure className="relative mb-4 aspect-[16/10] overflow-hidden md:hidden">
+                      <img
+                        src={image.src}
+                        alt={image.alt}
+                        decoding="async"
+                        className="absolute inset-0 h-full w-full object-cover object-[center_42%]"
+                      />
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute left-3 top-3 z-[1] h-7 w-7 border-l border-t border-paper/80"
+                      />
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute bottom-3 right-3 z-[1] h-7 w-7 border-b border-r border-paper/80"
+                      />
+                      <figcaption className="pointer-events-none absolute inset-x-3 bottom-3 z-[1] text-[0.68rem] font-medium uppercase leading-snug tracking-[0.12em] text-paper [text-shadow:0_1px_8px_rgba(18,12,8,0.55)]">
+                        {image.caption}
+                      </figcaption>
+                    </figure>
+                  ) : null}
+                  <h3 className="font-serif text-[1.65rem] font-medium tracking-[-0.03em] sm:text-[2.15rem]">
+                    {item.name}
+                  </h3>
+                  <p className="mt-2 max-w-[38ch] text-[1.02rem] leading-relaxed text-mute">
+                    {item.text}
+                  </p>
+                </div>
+              </article>
+            )
+          })}
         </div>
         </div>
       </div>

@@ -138,11 +138,11 @@ export function Footer() {
         <div
           data-fade
           className={
-            showContact ? 'mt-12 border-t border-line pt-8 sm:mt-14' : ''
+            showContact ? 'mt-10 border-t border-line pt-6 sm:mt-14 sm:pt-8' : ''
           }
         >
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-            <div className="flex min-w-0 items-center gap-4">
+          <div className="flex items-center justify-between gap-3 sm:gap-6">
+            <div className="flex min-w-0 items-center gap-3 sm:gap-4">
               <Link
                 to="/"
                 aria-label={site.name}
@@ -152,16 +152,16 @@ export function Footer() {
                 <img
                   src={site.logo.src}
                   alt=""
-                  className="h-14 w-auto sm:h-16"
+                  className="h-11 w-auto sm:h-16"
                 />
               </Link>
-              <div className="min-w-0 text-[0.95rem] text-mute">
+              <div className="min-w-0 text-[0.88rem] leading-snug text-mute sm:text-[0.95rem]">
                 <p className="text-ink">{site.name}</p>
-                <p className="mt-1">{site.address}</p>
+                <p className="mt-0.5">{site.address}</p>
               </div>
             </div>
 
-            <ul className="flex gap-3">
+            <ul className="flex shrink-0 gap-2 sm:gap-3">
               {socials.map((item) => (
                 <li key={item.label}>
                   {item.href ? (
@@ -170,14 +170,14 @@ export function Footer() {
                       target="_blank"
                       rel="noreferrer"
                       aria-label={item.label}
-                      className="flex h-11 w-11 items-center justify-center border border-line text-ink no-underline"
+                      className="flex h-10 w-10 items-center justify-center border border-line text-ink no-underline sm:h-11 sm:w-11"
                     >
                       {item.icon}
                     </a>
                   ) : (
                     <span
                       aria-label={`${item.label} — odkaz doplníme`}
-                      className="flex h-11 w-11 items-center justify-center border border-line text-mute"
+                      className="flex h-10 w-10 items-center justify-center border border-line text-mute sm:h-11 sm:w-11"
                     >
                       {item.icon}
                     </span>
@@ -188,47 +188,44 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 border-t border-line pt-4 pb-[max(5.75rem,calc(env(safe-area-inset-bottom)+4.75rem))] md:mt-10 md:pb-5">
-          <div className="flex flex-col items-center gap-1 text-center text-[0.82rem] leading-snug text-mute sm:grid sm:grid-cols-3 sm:items-center sm:gap-6 sm:text-[0.9rem]">
-            <p className="sm:justify-self-start sm:text-left">
-              {site.owner} © {year}
-              <span className="mt-1 block sm:mt-0 sm:ml-3 sm:inline">
-                IČO: {site.ico}
-              </span>
-            </p>
-            <p className="sm:justify-self-center">
-              <a
-                href={site.creditHref}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex min-h-11 items-center text-mute no-underline hover:underline"
-              >
-                {site.credit}
-              </a>
-            </p>
+        <div
+          data-sticky-hide
+          className="mt-5 border-t border-line pt-3 pb-[max(1.15rem,env(safe-area-inset-bottom))] md:mt-10 md:pt-4 md:pb-5"
+        >
+          <div className="flex flex-col items-center gap-0 text-center text-[0.8rem] leading-snug text-mute sm:grid sm:grid-cols-3 sm:items-center sm:gap-6 sm:text-[0.9rem]">
             <nav
               aria-label="Právní informace"
-              className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0 sm:justify-self-end sm:justify-end sm:gap-x-5"
+              className="sm:justify-self-start sm:text-left"
             >
-              <Link
-                to={site.legal.terms.path}
-                aria-current={location.pathname === site.legal.terms.path ? 'page' : undefined}
-                className={`inline-flex min-h-11 items-center px-1 no-underline hover:underline ${
-                  location.pathname === site.legal.terms.path ? 'text-ink' : 'text-mute'
-                }`}
-              >
-                {site.legal.terms.label}
-              </Link>
               <Link
                 to={site.legal.privacy.path}
                 aria-current={location.pathname === site.legal.privacy.path ? 'page' : undefined}
-                className={`inline-flex min-h-11 items-center px-1 no-underline hover:underline ${
+                className={`inline-flex min-h-10 items-center no-underline hover:underline ${
                   location.pathname === site.legal.privacy.path ? 'text-ink' : 'text-mute'
                 }`}
               >
                 {site.legal.privacy.label}
               </Link>
             </nav>
+            <p className="py-1 sm:justify-self-center sm:py-0 sm:text-center">
+              {site.owner} © {year}
+              <span className="sm:ml-3 sm:inline">
+                <span className="mx-1.5 sm:hidden" aria-hidden>
+                  ·
+                </span>
+                IČO: {site.ico}
+              </span>
+            </p>
+            <p className="sm:justify-self-end sm:text-right">
+              <a
+                href={site.creditHref}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex min-h-10 items-center text-mute no-underline hover:underline"
+              >
+                {site.credit}
+              </a>
+            </p>
           </div>
         </div>
       </div>

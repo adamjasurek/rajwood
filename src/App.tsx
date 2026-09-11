@@ -3,6 +3,7 @@ import { Layout } from './components/Layout'
 import { site } from './content/site'
 import { HomePage } from './pages/HomePage'
 import { LegalPage } from './pages/LegalPage'
+import { RealizationsPage } from './pages/RealizationsPage'
 
 export default function App() {
   return (
@@ -10,21 +11,19 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path={site.gallery.path} element={<RealizationsPage />} />
           <Route
-            path={site.legal.terms.path}
-            element={<LegalPage kind="terms" />}
+            path={`${site.gallery.path}/:slug`}
+            element={<Navigate to={site.gallery.path} replace />}
           />
-          <Route
-            path={site.legal.privacy.path}
-            element={<LegalPage kind="privacy" />}
-          />
+          <Route path={site.legal.privacy.path} element={<LegalPage />} />
           <Route
             path="/ochrana-osobnich-udaju"
             element={<Navigate to={site.legal.privacy.path} replace />}
           />
           <Route
-            path="/realizace/:slug"
-            element={<Navigate to="/#realizace" replace />}
+            path="/obchodni-podminky"
+            element={<Navigate to="/" replace />}
           />
         </Route>
       </Routes>

@@ -36,11 +36,15 @@ export function Header() {
   const menuRef = useRef<HTMLDivElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
   const menuTl = useRef<gsap.core.Timeline | null>(null)
+  const menuOpenRef = useRef(false)
+  const showHeader = useRef<(instant?: boolean) => void>(() => {})
   const [menuOpen, setMenuOpen] = useState(false)
   const [menuMounted, setMenuMounted] = useState(false)
   const menuId = useId()
+  menuOpenRef.current = menuOpen
 
   const openMenu = () => {
+    showHeader.current(true)
     setMenuMounted(true)
     setMenuOpen(true)
   }
@@ -80,6 +84,7 @@ export function Header() {
           const heightDelta = expandedBar - compactBar
           const enterAt = heightDelta + 24
           const leaveAt = 8
+          const hideAfter = expandedBar + 48
           const duration = reduceMotion ? 0 : 0.65
           const fade = reduceMotion ? 0 : 1.05
 
@@ -151,10 +156,61 @@ export function Header() {
             onLeave: () => setCompact(true, isBooting()),
             onLeaveBack: () => setCompact(false, isBooting()),
           })
+
+          if (!isDesktop) {
+            const hideTween = gsap.to(header, {
+              yPercent: -100,
+              paused: true,
+              duration: reduceMotion ? 0 : 0.32,
+              ease: 'power2.out',
+            })
+
+            let revealed = true
+            const setRevealed = (next: boolean, instant = false) => {
+              if (menuOpenRef.current) next = true
+              if (revealed === next) {
+                if (instant) hideTween.progress(next ? 0 : 1)
+                return
+              }
+              revealed = next
+              header.dataset.revealed = next ? 'true' : 'false'
+              if (instant || reduceMotion) {
+                hideTween.progress(next ? 0 : 1)
+                return
+              }
+              if (next) hideTween.reverse()
+              else hideTween.play()
+            }
+
+            header.dataset.revealed = 'true'
+            showHeader.current = (instant = false) => setRevealed(true, instant)
+
+            ScrollTrigger.create({
+              start: 0,
+              end: 'max',
+              onRefresh: (self) => {
+                if (self.scroll() <= hideAfter) setRevealed(true, true)
+              },
+              onUpdate: (self) => {
+                if (isBooting() || menuOpenRef.current) {
+                  setRevealed(true, isBooting())
+                  return
+                }
+                if (self.scroll() <= hideAfter) {
+                  setRevealed(true)
+                  return
+                }
+                setRevealed(self.direction === -1)
+              },
+            })
+          }
         },
       )
 
-      return () => mm.revert()
+      return () => {
+        showHeader.current = () => {}
+        mm.revert()
+      }
     },
     { scope: root },
   )
@@ -258,6 +314,7 @@ export function Header() {
       <header
         ref={root}
         data-compact="false"
+        data-revealed="true"
         className="fixed inset-x-0 top-0 z-40 bg-[#2a1810] pt-[env(safe-area-inset-top)]"
       >
         <WoodBackdrop />

@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
   extraPhotoLabel,
   site,
@@ -7,6 +8,7 @@ import {
 } from '../content/site'
 import { gsap, ScrollTrigger, useGSAP } from '../lib/gsap'
 import { Lightbox } from './Lightbox'
+import { WoodBackdrop } from './WoodBackdrop'
 
 const PREVIEW_COUNT = 2
 
@@ -146,7 +148,70 @@ function ProjectPreview({ project }: { project: Project }) {
   )
 }
 
-export function Gallery() {
+function ProjectCard({ project }: { project: Project }) {
+  const [lightbox, setLightbox] = useState<number | null>(null)
+  const cover = project.photos[0]
+  if (!cover) return null
+
+  return (
+    <div>
+      <button
+        type="button"
+        data-shot
+        onClick={() => setLightbox(0)}
+        aria-label={project.name}
+        className="group block w-full cursor-pointer border-0 bg-transparent p-0 text-left"
+      >
+        <span className="relative block overflow-hidden">
+          <img
+            src={cover.src}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+          />
+          <span className="pointer-events-none absolute inset-0 bg-ink/0 transition-colors duration-300 group-hover:bg-ink/10" />
+          {project.photos.length > 1 ? (
+            <span
+              aria-hidden="true"
+              className="absolute bottom-2 right-2 bg-[rgba(18,12,8,0.62)] px-2 py-0.5 font-serif text-[0.72rem] tracking-wide text-paper"
+            >
+              {project.photos.length}
+            </span>
+          ) : null}
+        </span>
+        <span className="mt-2 block font-serif text-[0.98rem] font-medium leading-snug tracking-[-0.02em] sm:mt-2.5 sm:text-[1.12rem]">
+          {project.name}
+        </span>
+      </button>
+      {lightbox !== null ? (
+        <Lightbox
+          photos={project.photos}
+          startIndex={lightbox}
+          onClose={() => setLightbox(null)}
+        />
+      ) : null}
+    </div>
+  )
+}
+
+type GalleryProps = {
+  projects: readonly Project[]
+  title: string
+  heading?: 'h1' | 'h2'
+  sectionId?: string
+  allHref?: string
+  compact?: boolean
+}
+
+export function Gallery({
+  projects,
+  title,
+  heading: TitleTag = 'h2',
+  sectionId,
+  allHref,
+  compact = false,
+}: GalleryProps) {
   const root = useRef<HTMLElement>(null)
 
   useGSAP(
@@ -159,13 +224,18 @@ export function Gallery() {
           autoAlpha: 0,
           duration: 0.85,
           stagger: 0.08,
-          scrollTrigger: {
-            trigger: root.current,
-            start: 'top 82%',
-          },
+          ...(compact
+            ? {}
+            : {
+                scrollTrigger: {
+                  trigger: root.current,
+                  start: 'top 82%',
+                },
+              }),
         })
 
-        gsap.set('[data-shot]', { autoAlpha: 0, y: 28 })
+        const shots = gsap.utils.toArray<HTMLElement>('[data-shot]')
+        gsap.set(shots, { autoAlpha: 0, y: 28 })
 
         const revealShots = (elements: Element[]) => {
           gsap.to(elements, {
@@ -177,37 +247,80 @@ export function Gallery() {
           })
         }
 
-        ScrollTrigger.batch('[data-shot]', {
+        ScrollTrigger.batch(shots, {
           start: 'top 90%',
           onEnter: revealShots,
           onEnterBack: revealShots,
         })
+
+        const inView = shots.filter((el) => {
+          const rect = el.getBoundingClientRect()
+          return rect.bottom > 0 && rect.top < window.innerHeight * 0.95
+        })
+        if (inView.length) revealShots(inView)
+
+        const delayed = gsap.delayedCall(0.12, () => {
+          ScrollTrigger.refresh()
+          const later = shots.filter((el) => {
+            const rect = el.getBoundingClientRect()
+            const hidden = getComputedStyle(el).visibility === 'hidden'
+            return (
+              hidden &&
+              rect.height > 0 &&
+              rect.bottom > 0 &&
+              rect.top < window.innerHeight * 0.95
+            )
+          })
+          if (later.length) revealShots(later)
+        })
+
+        return () => delayed.kill()
       })
 
       return () => mm.revert()
     },
-    { scope: root },
+    { scope: root, dependencies: [compact] },
   )
 
   return (
     <section
       ref={root}
-      id={site.gallery.id}
+      id={sectionId}
       className="border-b border-line py-12 sm:py-20 lg:py-24"
     >
       <div className="mx-auto max-w-[1120px] px-4 sm:px-5">
-        <h2
+        <TitleTag
           data-fade
           className="text-balance text-center font-serif text-[1.85rem] font-medium leading-tight tracking-[-0.02em] sm:text-[2.5rem]"
         >
-          {site.gallery.title}
-        </h2>
+          {title}
+        </TitleTag>
 
-        <div className="mt-8 flex flex-col gap-10 sm:mt-16 sm:gap-20">
-          {site.gallery.projects.map((project) => (
-            <ProjectPreview key={project.slug} project={project} />
-          ))}
-        </div>
+        {compact ? (
+          <div className="mt-8 grid grid-cols-2 gap-x-2.5 gap-y-6 sm:mt-12 sm:grid-cols-3 sm:gap-x-5 sm:gap-y-8">
+            {projects.map((project) => (
+              <ProjectCard key={project.slug} project={project} />
+            ))}
+          </div>
+        ) : (
+          <div className="mt-8 flex flex-col gap-10 sm:mt-16 sm:gap-20">
+            {projects.map((project) => (
+              <ProjectPreview key={project.slug} project={project} />
+            ))}
+          </div>
+        )}
+
+        {allHref ? (
+          <div data-fade className="mt-10 flex justify-center sm:mt-16 max-md:scroll-mb-24">
+            <Link
+              to={allHref}
+              className="btn-wood inline-flex h-12 w-full items-center justify-center px-7 text-[0.95rem] font-medium tracking-wide text-paper no-underline sm:w-auto"
+            >
+              <WoodBackdrop />
+              <span className="relative z-[1]">{site.gallery.allCta}</span>
+            </Link>
+          </div>
+        ) : null}
       </div>
     </section>
   )

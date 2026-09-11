@@ -57,7 +57,7 @@ export function Hero() {
   return (
     <section ref={root} className="border-b border-line">
       <div className="mx-auto grid max-w-[1120px] items-end gap-6 px-4 pb-8 pt-6 sm:gap-8 sm:px-5 sm:pb-14 sm:pt-14 lg:grid-cols-2 lg:gap-16 lg:pb-20 lg:pt-16">
-        <div>
+        <div className="text-center lg:text-left">
           <p
             data-hero-copy
             className="mb-2 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-mute sm:mb-4 sm:text-[0.72rem] sm:tracking-[0.22em]"
@@ -72,7 +72,7 @@ export function Hero() {
           </h1>
           <p
             data-hero-copy
-            className="mt-3 max-w-[36rem] text-[1.02rem] leading-relaxed text-mute sm:mt-5 sm:text-[1.05rem]"
+            className="mx-auto mt-3 max-w-[36rem] text-[1.02rem] leading-relaxed text-mute sm:mt-5 sm:text-[1.05rem] lg:mx-0"
           >
             {site.hero.subtitle}
           </p>
