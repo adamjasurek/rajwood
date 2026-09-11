@@ -2,7 +2,7 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { defineConfig, loadEnv } from 'vite'
-import { processInquiry } from './server/inquiryMail'
+import { deliverInquiry } from './api/inquiry'
 import { processSmtpSetup } from './server/setupSmtp'
 
 function readBody(req: IncomingMessage) {
@@ -56,7 +56,7 @@ export default defineConfig(({ mode }) => {
             })
           }
 
-          post('/api/inquiry', processInquiry)
+          post('/api/inquiry', deliverInquiry)
           post('/api/setup-smtp', processSmtpSetup)
         },
       },
