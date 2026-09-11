@@ -71,7 +71,7 @@ function ownerSummary(values: Inquiry) {
   ].join('\n')
 }
 
-async function postFormSubmit(payload: Record<string, string>) {
+async function postFormSubmit(payload: Record<string, string>, origin: string) {
   const response = await fetch(
     `https://formsubmit.co/ajax/${encodeURIComponent(INBOX)}`,
     {
@@ -79,6 +79,8 @@ async function postFormSubmit(payload: Record<string, string>) {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        Origin: origin,
+        Referer: `${origin}/`,
       },
       body: JSON.stringify(payload),
     },
@@ -90,7 +92,7 @@ async function postFormSubmit(payload: Record<string, string>) {
   }
 }
 
-async function sendViaFormSubmit(values: Inquiry) {
+async function sendViaFormSubmit(values: Inquiry, origin: string) {
   const fullName = `${values.firstName} ${values.lastName}`.trim()
   const summary = customerSummary(values)
 
@@ -104,7 +106,7 @@ async function sendViaFormSubmit(values: Inquiry) {
     email: values.email,
     telefon: values.phone,
     zprava: values.message || '—',
-  })
+  }, origin)
 
   await postFormSubmit({
     _subject: CUSTOMER_SUBJECT,
@@ -116,7 +118,7 @@ async function sendViaFormSubmit(values: Inquiry) {
     _autoresponse: summary,
     email: values.email,
     zprava: summary,
-  })
+  }, origin)
 }
 
 async function sendViaSmtp(values: Inquiry) {
@@ -173,11 +175,14 @@ export function GET() {
 export async function POST(request: Request) {
   try {
     const values = parseInquiry(await request.json())
+    const origin =
+      request.headers.get('origin') ||
+      'https://rajwood.adamjasurek.cz'
     try {
       await sendViaSmtp(values)
     } catch (error) {
       console.error('[inquiry] smtp', error)
-      await sendViaFormSubmit(values)
+      await sendViaFormSubmit(values, origin)
     }
     return Response.json({ ok: true })
   } catch (error) {
