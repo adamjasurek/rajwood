@@ -1,8 +1,10 @@
 import { createRequire } from 'node:module'
 import { site } from '../src/content/site'
 
-const require = createRequire(import.meta.url)
-const nodemailer = require('nodemailer') as typeof import('nodemailer')
+function loadNodemailer() {
+  const require = createRequire(import.meta.url)
+  return require('nodemailer') as typeof import('nodemailer')
+}
 
 export type Inquiry = {
   firstName: string
@@ -97,6 +99,7 @@ function smtpAuth() {
 }
 
 function createTransport(port: number) {
+  const nodemailer = loadNodemailer()
   const secure = port === 465
 
   return nodemailer.createTransport({
