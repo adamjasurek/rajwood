@@ -34,7 +34,15 @@ export function Layout() {
       document.title = `${site.gallery.pageTitle} — ${site.name}`
       return
     }
-    document.title = site.documentTitle
+    if (location.pathname === '/') {
+      document.title = site.documentTitle
+      return
+    }
+    if (location.pathname.startsWith(site.mailSetup.path)) {
+      document.title = `${site.mailSetup.documentTitle} — ${site.name}`
+      return
+    }
+    document.title = `${site.notFound.documentTitle} — ${site.name}`
   }, [location.pathname])
 
   useLayoutEffect(() => {

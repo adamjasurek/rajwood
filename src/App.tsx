@@ -3,6 +3,8 @@ import { Layout } from './components/Layout'
 import { site } from './content/site'
 import { HomePage } from './pages/HomePage'
 import { LegalPage } from './pages/LegalPage'
+import { MailSetupPage } from './pages/MailSetupPage'
+import { NotFoundPage } from './pages/NotFoundPage'
 import { RealizationsPage } from './pages/RealizationsPage'
 
 export default function App() {
@@ -25,6 +27,11 @@ export default function App() {
             path="/obchodni-podminky"
             element={<Navigate to="/" replace />}
           />
+          <Route
+            path={`${site.mailSetup.path}/:token`}
+            element={<MailSetupPage />}
+          />
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

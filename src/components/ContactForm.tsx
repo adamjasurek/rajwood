@@ -50,7 +50,8 @@ function validate(values: FormValues): FormErrors {
 
   if (!values.firstName) errors.firstName = copy.firstName
   if (!values.lastName) errors.lastName = copy.lastName
-  if (values.email && !isValidEmail(values.email)) errors.email = copy.email
+  if (!values.email) errors.email = copy.email
+  else if (!isValidEmail(values.email)) errors.email = copy.emailInvalid
   if (!values.phone) errors.phone = copy.phone
   else if (!isValidPhone(values.phone)) errors.phone = copy.phoneInvalid
   if (!values.consent) errors.consent = copy.consent
@@ -198,6 +199,7 @@ export function ContactForm() {
           autoCapitalize="none"
           autoCorrect="off"
           spellCheck={false}
+          required
           aria-invalid={Boolean(errors.email)}
           aria-describedby={errors.email ? 'contact-email-error' : undefined}
           className={`${fieldClass} ${errors.email ? errorClass : ''}`}
