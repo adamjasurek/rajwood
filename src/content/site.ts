@@ -203,7 +203,6 @@ export const site = {
     path: '/nastaveni-mailu',
     documentTitle: 'Nastavení pošty',
     title: 'Nastavení odesílání poptávek',
-    text: 'Zadejte heslo k e-mailu {email}. Uloží se u hostingu a vývojář ho neuvidí.',
     password: 'Heslo k e-mailu',
     submit: 'Uložit',
     saving: 'Ukládám…',

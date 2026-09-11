@@ -77,9 +77,6 @@ export function MailSetupPage() {
             <h1 className="text-balance font-serif text-[1.85rem] font-medium leading-tight tracking-[-0.02em] sm:text-[2.75rem]">
               {copy.title}
             </h1>
-            <p className="mt-5 text-[1.05rem] leading-relaxed text-mute">
-              {copy.text.replace('{email}', site.email)}
-            </p>
             <form onSubmit={onSubmit} className="mt-8 grid gap-4" aria-busy={saving}>
               <label className="block text-[0.82rem] font-medium tracking-wide text-mute">
                 {copy.password}
