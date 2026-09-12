@@ -219,9 +219,9 @@ export function Services() {
                 style={{ zIndex: index, opacity: index === 0 ? 1 : 0 }}
               >
                 <img
-                  data-service-img
                   src={image.src}
                   alt={image.alt}
+                  loading="lazy"
                   decoding="async"
                   className="absolute inset-0 h-full w-full object-cover object-[center_42%]"
                 />
@@ -278,6 +278,7 @@ export function Services() {
                       <img
                         src={image.src}
                         alt={image.alt}
+                        loading="lazy"
                         decoding="async"
                         className="absolute inset-0 h-full w-full object-cover object-[center_42%]"
                       />

@@ -16,4 +16,4 @@ ScrollTrigger.config({
   ignoreMobileResize: true,
 })
 
-export { gsap, ScrollTrigger, SplitText, DrawSVGPlugin, useGSAP }
+export { gsap, ScrollTrigger, SplitText, useGSAP }

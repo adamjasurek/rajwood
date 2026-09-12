@@ -29,6 +29,9 @@ export function Logo({ className = '' }: LogoProps) {
         data-logo-mark
         src={failedMark ? site.logo.fallbackSrc : site.logo.markSrc}
         alt={site.name}
+        width={168}
+        height={192}
+        decoding="async"
         className="relative z-[1] h-10 w-auto max-w-none shrink-0 object-contain md:h-14"
         onError={() => setFailedMark(true)}
       />

@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { defineConfig, loadEnv } from 'vite'
 import { deliverInquiry } from './api/inquiry'
-import { processSmtpSetup } from './server/setupSmtp'
 
 function readBody(req: IncomingMessage) {
   return new Promise<string>((resolve, reject) => {
@@ -57,7 +56,6 @@ export default defineConfig(({ mode }) => {
           }
 
           post('/api/inquiry', deliverInquiry)
-          post('/api/setup-smtp', processSmtpSetup)
         },
       },
     ],

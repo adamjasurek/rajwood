@@ -1,9 +1,10 @@
 export const site = {
   name: 'RAJWOOD',
-  documentTitle: 'RAJWOOD — Pergoly a přístřešky | Hnojník',
+  url: 'https://rajwood.com',
   region: 'Moravskoslezský kraj',
   seat: 'Hnojník',
   address: 'Hnojník 394',
+  postalCode: '739 53',
   owner: 'Lukáš Rajnoha',
   ico: '000000000',
   credit: 'Vytvořil Adam Jašúrek',
@@ -128,8 +129,8 @@ export const site = {
         name: 'Pergola / Dolní Domaslavice / 2026',
         featured: true,
         photos: [
-          { src: '/images/pergola2/pergola2-01.webp', alt: 'Pergola u domu s posezením a jídelním stolem' },
-          { src: '/images/pergola2/pergola2-02.webp', alt: 'Dřevěná pergola s taškovou střechou u domu' },
+          { src: '/images/pergola2/pergola2-01.webp', alt: 'Pergola u domu s posezením' },
+          { src: '/images/pergola2/pergola2-02.webp', alt: 'Dřevěná pergola u domu' },
         ],
       },
       {
@@ -138,8 +139,8 @@ export const site = {
         featured: true,
         photos: [
           { src: '/images/pergola/pergola-01.webp', alt: 'Dřevěná pergola s posezením' },
-          { src: '/images/pergola/pergola-02.webp', alt: 'Pergola se šikmou střechou' },
-          { src: '/images/pergola/pergola-03.webp', alt: 'Posezení pod pergolou s houpacím křeslem' },
+          { src: '/images/pergola/pergola-02.webp', alt: 'Pergola s posezením' },
+          { src: '/images/pergola/pergola-03.webp', alt: 'Posezení a houpací křeslo pod pergolou' },
           { src: '/images/pergola/pergola-04.webp', alt: 'Interiér pergoly s ratanovým posezením' },
           { src: '/images/pergola/pergola-05.webp', alt: 'Krov a osvětlení pergoly' },
         ],
@@ -153,7 +154,7 @@ export const site = {
           { src: '/images/vstup/vstup-02.webp', alt: 'Čelní pohled na vstup se stříškou' },
           { src: '/images/vstup/vstup-03.webp', alt: 'Detail stříšky nad dveřmi' },
           { src: '/images/vstup/vstup-04.webp', alt: 'Dřevěné trámy vstupu' },
-          { src: '/images/vstup/vstup-05.webp', alt: 'Štít stříšky nad vstupem' },
+          { src: '/images/vstup/vstup-05.webp', alt: 'Detail trámů stříšky' },
         ],
       },
     ],
@@ -169,7 +170,6 @@ export const site = {
       phone: 'Telefonní číslo',
       email: 'E-mail',
       message: 'Zpráva (nepovinné)',
-      messageSummary: 'Zpráva',
       submit: 'Odeslat',
       sending: 'Odesílám…',
       successTitle: 'Odesláno!',
@@ -177,10 +177,6 @@ export const site = {
         'Shrnutí poptávky jsme poslali na váš e-mail. Brzy se vám ozveme.',
       consent: 'Souhlasím se zpracováním',
       consentLink: 'osobních údajů',
-      customerSubject: 'Poptávka u RAJWOOD',
-      inquirySubject: 'Nová poptávka!',
-      autoresponse:
-        'děkujeme za poptávku. Ozveme se vám co nejdříve.\nNíže je shrnutí odeslaných údajů:',
       errors: {
         firstName: 'Zadejte jméno.',
         lastName: 'Zadejte příjmení.',
@@ -193,39 +189,43 @@ export const site = {
       },
     },
   },
+  seo: {
+    ogImage: '/images/og.jpg',
+    home: {
+      title: 'Rajwood | Pergoly na míru vašim přáním a potřebám',
+      description:
+        'Stavíme zakázkové dřevěné pergoly, přístřešky a kůlny po celém Moravskoslezském kraji.',
+    },
+    realizations: {
+      title: 'Realizace - Pergoly, přístřešky, kůlny, stání a mnoho dalšího',
+      description:
+        'Fotogalerie našich realizací v Hnojníku, Dolních Domaslavicích, Kunčičkách u Bašky a okolí',
+    },
+    privacy: {
+      title: 'Ochrana osobních údajů | RAJWOOD',
+      description: 'Zásady zpracování osobních údajů',
+    },
+    notFound: {
+      title: 'Stránka nenalezena | RAJWOOD',
+    },
+  },
   notFound: {
-    documentTitle: 'Stránka nenalezena',
     code: '404',
     title: 'Tato stránka neexistuje.',
     cta: 'Zpět na úvod',
-  },
-  mailSetup: {
-    path: '/nastaveni-mailu',
-    documentTitle: 'Nastavení pošty',
-    title: 'Nastavení odesílání poptávek',
-    password: 'Heslo k e-mailu',
-    submit: 'Uložit',
-    saving: 'Ukládám…',
-    successTitle: 'Hotovo',
-    successText:
-      'Poptávky se teď budou posílat z vašeho e-mailu. Napište mi prosím na WhatsApp, že je to hotové. Díky.',
-    whatsappCta: 'Napsat na WhatsApp',
-    whatsappMessage: 'Hotovo, heslo je uložené. Díky.',
-    whatsappTel: '420731144570',
-    error: 'Uložení se nepovedlo. Zkuste to znovu, nebo se ozvěte.',
-    passwordError: 'Zadejte heslo k e-mailu.',
   },
   legal: {
     privacy: {
       path: '/gdpr',
       label: 'Ochrana osobních údajů',
       title: 'Zásady zpracování osobních údajů',
-      updated: '',
-      effective: 'Tyto podmínky nabývají účinnosti dnem 11. 9, 2026.',
-      intro: '',
+      updated: 'Aktualizováno 11. 9. 2026',
+      effective: 'Tyto podmínky nabývají účinnosti dnem 11. 9. 2026.',
+      intro:
+        'Tyto zásady popisují, jaké osobní údaje zpracováváme v souvislosti s webem rajwood.com a s poptávkou přes kontaktní formulář.',
       sections: [
         {
-          heading: '1. Kdo zpracovává vaše údaje (Správce)',
+          heading: '1. Kdo zpracovává vaše údaje',
           paragraphs: [
             'Správcem vašich osobních údajů je Lukáš Rajnoha, se sídlem Hnojník 394, 739 53 Hnojník, IČO: 00000000, zapsán v živnostenském rejstříku.',
             'E-mail: rajwood@seznam.cz',
@@ -259,10 +259,14 @@ export const site = {
         {
           heading: '4. Kdo další k údajům může mít přístup (Zpracovatelé)',
           paragraphs: [
-            'Vaše osobní údaje nikomu neprodáváme ani je nepředáváme mimo Evropskou unii. Přístup k nim má pouze Správce a spolehlivý partner, který zajišťuje technický chod webu:',
+            'Vaše osobní údaje nikomu neprodáváme. Při provozu webu využíváme tyto zpracovatele:',
           ],
-          items: ['Poskytovatel webhostingu: společnost Webglobe, s.r.o.'],
+          items: [
+            'Hosting webu: společnost Vercel Inc.',
+            'Písma na webu (Google Fonts): společnost Google Ireland Limited',
+          ],
           closing: [
+            'Při načtení stránek může Google zpracovat vaši IP adresu a základní údaje o prohlížeči výhradně za účelem doručení písem. Tyto údaje nepoužíváme k marketingu.',
             'Na našem webu nevyužíváme žádné marketingové ani analytické sledovací nástroje (tzv. cookies třetích stran) a vaše data nezařazujeme do žádných databází pro rozesílání newsletterů.',
           ],
         },

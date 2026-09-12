@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { WoodBackdrop } from '../components/WoodBackdrop'
 import { site } from '../content/site'
@@ -7,14 +7,6 @@ import { gsap, useGSAP } from '../lib/gsap'
 export function NotFoundPage() {
   const root = useRef<HTMLElement>(null)
   const page = site.notFound
-
-  useEffect(() => {
-    const meta = document.createElement('meta')
-    meta.name = 'robots'
-    meta.content = 'noindex, nofollow'
-    document.head.appendChild(meta)
-    return () => meta.remove()
-  }, [])
 
   useGSAP(
     () => {

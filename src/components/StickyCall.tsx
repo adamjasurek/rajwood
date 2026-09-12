@@ -75,7 +75,7 @@ export function StickyCall() {
       aria-hidden={hidden}
       inert={hidden}
     >
-      <CallButton variant="bar">Zavolat {site.phone.display}</CallButton>
+      <CallButton>Zavolat {site.phone.display}</CallButton>
     </div>
   )
 }

@@ -41,7 +41,7 @@ function PhotoButton({
     >
       <img
         src={photo.src}
-        alt=""
+        alt={photo.alt}
         loading="lazy"
         decoding="async"
         className={`w-full object-cover transition-[filter,transform] duration-500 ${imgClassName} ${
@@ -165,7 +165,7 @@ function ProjectCard({ project }: { project: Project }) {
         <span className="relative block overflow-hidden">
           <img
             src={cover.src}
-            alt=""
+            alt={cover.alt}
             loading="lazy"
             decoding="async"
             className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"

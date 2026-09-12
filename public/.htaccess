@@ -1,6 +1,36 @@
+ErrorDocument 404 /index.html
+
 RewriteEngine On
 RewriteBase /
-RewriteRule ^index\.html$ - [L]
-RewriteCond %{REQUEST_FILENAME} !-f
+
+RewriteCond %{HTTP_HOST} ^www\.rajwood\.com$ [NC]
+RewriteRule ^ https://rajwood.com%{REQUEST_URI} [L,R=301]
+
+RewriteCond %{HTTP_HOST} ^rajwood\.com$ [NC]
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://rajwood.com%{REQUEST_URI} [L,R=301]
+
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /index.html [L]
+RewriteRule ^(.+)/$ /$1 [L,R=301]
+
+RewriteRule ^ochrana-osobnich-udaju$ /gdpr [L,R=301]
+RewriteRule ^obchodni-podminky$ / [L,R=301]
+RewriteRule ^realizace/.+$ /realizace [L,R=301]
+
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+RewriteRule ^(realizace|gdpr)$ /index.html [L]
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(?:html)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.(?:js|css)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(?:webp|jpg|jpeg|png|svg|ico)$">
+    Header set Cache-Control "public, max-age=31536000"
+  </FilesMatch>
+</IfModule>

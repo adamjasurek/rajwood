@@ -4,7 +4,7 @@ export const HEADER_COMPACT = 56
 export const HEADER_EXPANDED_DESKTOP = 104
 export const HEADER_EXPANDED_MOBILE = 72
 
-export function safeTop() {
+function safeTop() {
   const raw = getComputedStyle(document.documentElement).getPropertyValue('--safe-top')
   const value = Number.parseFloat(raw)
   return Number.isFinite(value) ? value : 0
@@ -19,13 +19,13 @@ function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
-export function expandedHeaderHeight() {
+function expandedHeaderHeight() {
   return window.matchMedia('(min-width: 768px)').matches
     ? HEADER_EXPANDED_DESKTOP
     : HEADER_EXPANDED_MOBILE
 }
 
-export function headerOffset(scrollY = window.scrollY) {
+function headerOffset(scrollY = window.scrollY) {
   const expanded = expandedHeaderHeight()
   const enterAt = expanded - HEADER_COMPACT + 24
   const bar = scrollY > enterAt ? HEADER_COMPACT : expanded
@@ -113,7 +113,7 @@ function animateScrollTo(top: number) {
   scrollFrame = requestAnimationFrame(step)
 }
 
-export function withInstantScroll(fn: () => void) {
+function withInstantScroll(fn: () => void) {
   stopAnimatedScroll()
   const html = document.documentElement
   const previous = html.style.scrollBehavior

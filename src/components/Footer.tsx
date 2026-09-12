@@ -145,13 +145,16 @@ export function Footer() {
             <div className="flex min-w-0 items-center gap-3 sm:gap-4">
               <Link
                 to="/"
-                aria-label={site.name}
                 onClick={() => window.scrollTo({ top: 0 })}
                 className="inline-block shrink-0 text-ink no-underline"
               >
                 <img
                   src={site.logo.src}
-                  alt=""
+                  alt={site.name}
+                  width={167}
+                  height={192}
+                  loading="lazy"
+                  decoding="async"
                   className="h-11 w-auto sm:h-16"
                 />
               </Link>
@@ -168,7 +171,7 @@ export function Footer() {
                     <a
                       href={item.href}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                       aria-label={item.label}
                       className="flex h-10 w-10 items-center justify-center border border-line text-ink no-underline sm:h-11 sm:w-11"
                     >

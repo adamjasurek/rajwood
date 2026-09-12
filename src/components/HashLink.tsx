@@ -3,7 +3,6 @@ import { scrollToHash } from '../lib/scroll'
 
 function resolveHref(to: LinkProps['to']) {
   if (typeof to === 'string') return to
-  if (typeof to === 'number') return ''
   return `${to.pathname ?? ''}${to.search ?? ''}${to.hash ?? ''}`
 }
 

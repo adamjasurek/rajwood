@@ -92,11 +92,10 @@ export function Hero() {
           className="order-first flex items-end justify-center lg:order-none"
         >
           <img
-            data-hero-img
             src={site.hero.image.src}
             alt={site.hero.image.alt}
-            width={2390}
-            height={1792}
+            width={1600}
+            height={1200}
             fetchPriority="high"
             decoding="async"
             className="h-auto w-full max-h-[min(17rem,calc(100svh-28rem))] object-contain object-bottom sm:max-h-96 md:max-h-[28rem] lg:max-h-[32rem]"

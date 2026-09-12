@@ -51,7 +51,7 @@ export function waitForLayout() {
   return Promise.all([waitFonts(400), waitEagerImages(800)]).then(() => waitFrames(2))
 }
 
-export function lockBootScroll() {
+function lockBootScroll() {
   if (typeof window === 'undefined') return
   const w = window as BootWindow
   if (w.__rajwoodBooted) {

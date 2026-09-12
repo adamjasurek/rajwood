@@ -1,9 +1,9 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Footer } from './Footer'
 import { Header } from './Header'
+import { SeoHead } from './SeoHead'
 import { StickyCall } from './StickyCall'
-import { site } from '../content/site'
 import { ScrollTrigger, useGSAP } from '../lib/gsap'
 import { unlockBootScroll, waitForLayout, waitFrames } from '../lib/bootScroll'
 import { scrollToHash, scrollToTop } from '../lib/scroll'
@@ -21,29 +21,6 @@ export function Layout() {
   const location = useLocation()
   const prevPathname = useRef<string | null>(null)
   const isHome = location.pathname === '/'
-
-  useEffect(() => {
-    const legal = Object.values(site.legal).find(
-      (item) => item.path === location.pathname,
-    )
-    if (legal) {
-      document.title = `${legal.title} — ${site.name}`
-      return
-    }
-    if (location.pathname === site.gallery.path) {
-      document.title = `${site.gallery.pageTitle} — ${site.name}`
-      return
-    }
-    if (location.pathname === '/') {
-      document.title = site.documentTitle
-      return
-    }
-    if (location.pathname.startsWith(site.mailSetup.path)) {
-      document.title = `${site.mailSetup.documentTitle} — ${site.name}`
-      return
-    }
-    document.title = `${site.notFound.documentTitle} — ${site.name}`
-  }, [location.pathname])
 
   useLayoutEffect(() => {
     const pathChanged = prevPathname.current !== location.pathname
@@ -90,6 +67,7 @@ export function Layout() {
 
   return (
     <div ref={page} id="top">
+      <SeoHead />
       <Header />
       <Outlet />
       <Footer />
